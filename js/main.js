@@ -54,6 +54,7 @@
   const cursorDot = document.getElementById('cursorDot');
 
   if (isFinePointer && cursorDot) {
+    document.documentElement.classList.add('has-custom-cursor');
     window.addEventListener('mousemove', (e) => {
       cursorDot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       cursorDot.classList.add('is-active');
@@ -90,7 +91,9 @@
     for (let i = 0; i < count; i += 1) {
       const slot = document.createElement('div');
       slot.className = 'media-slot';
-      slot.textContent = `Видео ${i + 1}`;
+      const label = document.createElement('span');
+      label.textContent = `Видео ${i + 1}`;
+      slot.appendChild(label);
       modalMedia.appendChild(slot);
     }
     lastFocused = document.activeElement;
