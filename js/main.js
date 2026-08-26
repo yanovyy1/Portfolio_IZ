@@ -14,7 +14,7 @@
       role: 'Lead Motion Designer / AI Artist',
       period: '2023 — 2024',
       desc: 'Руководил командой контента (5 моушн/графических дизайнеров + 5–7 аутсорс). Выстроил производственную структуру — 50+ креативов в неделю. Вместе с командой привели в приложение более 1 млн пользователей.',
-      mediaCount: 3,
+      media: ['glam_1.mp4', 'glam_2.mp4'],
     },
     prequel: {
       label: 'реклама',
@@ -30,7 +30,7 @@
       role: '—',
       period: '—',
       desc: 'Заглушка — замените на название, роль и описание ещё одного проекта.',
-      mediaCount: 3,
+      media: ['Other_1.mp4', 'Other_2.mp4', 'Other_3.mp4', 'Other_4.mp4', 'Other_5.mp4'],
     },
     denim: {
       label: 'проект',
@@ -38,7 +38,7 @@
       role: '—',
       period: '—',
       desc: 'Заглушка — замените на роль, период и описание проекта 495 Denim.',
-      mediaCount: 10,
+      media: ['495_01.mp4', '495_02.mp4', '495_03.mp4', '495_04.mp4', '495_05.mp4', '495_06.mp4', '495_07.mp4', '495_08.mp4'],
     },
   };
 
@@ -87,13 +87,26 @@
     modalPeriod.textContent = p.period;
     modalDesc.textContent = p.desc;
     modalMedia.innerHTML = '';
-    const count = p.mediaCount || 3;
+    const media = p.media || [];
+    const count = media.length || p.mediaCount || 3;
     for (let i = 0; i < count; i += 1) {
+      const file = media[i];
       const slot = document.createElement('div');
-      slot.className = 'media-slot';
-      const label = document.createElement('span');
-      label.textContent = `Видео ${i + 1}`;
-      slot.appendChild(label);
+      if (file) {
+        slot.className = 'media-slot media-slot--video';
+        const video = document.createElement('video');
+        video.src = `assets/vids/${file}`;
+        video.poster = `assets/vids/posters/${file.replace(/\.mp4$/, '.jpg')}`;
+        video.controls = true;
+        video.preload = 'metadata';
+        video.playsInline = true;
+        slot.appendChild(video);
+      } else {
+        slot.className = 'media-slot';
+        const label = document.createElement('span');
+        label.textContent = `Видео ${i + 1}`;
+        slot.appendChild(label);
+      }
       modalMedia.appendChild(slot);
     }
     lastFocused = document.activeElement;
