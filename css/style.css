@@ -325,6 +325,12 @@ button { background: none; border: 0; cursor: pointer; }
     min-height: clamp(260px, 48vh, 380px);
   }
 
+  .pi-denim { order: 1; }
+  .pi-glam { order: 2; }
+  .pi-prequel { order: 3; }
+  .pi-freelance { order: 4; }
+  .pi-other { order: 5; }
+
   .proj-name { font-size: clamp(17px, 2.8vh, 22px); }
 
   .modal-media { grid-template-columns: repeat(2, 1fr); }
