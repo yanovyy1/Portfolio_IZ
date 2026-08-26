@@ -67,7 +67,10 @@
   }
 
   /* ---------- Project modal ---------- */
+  const page = document.querySelector('.page');
   const overlay = document.getElementById('modalOverlay');
+  const modal = overlay.querySelector('.modal');
+  const modalScroll = document.getElementById('modalScroll');
   const modalClose = document.getElementById('modalClose');
   const modalLabel = document.getElementById('modalLabel');
   const modalTitle = document.getElementById('modalTitle');
@@ -77,6 +80,34 @@
   const modalMedia = document.getElementById('modalMedia');
 
   let lastFocused = null;
+
+  const updateScrollHint = () => {
+    const hasMore = modalScroll.scrollHeight - modalScroll.scrollTop - modalScroll.clientHeight > 4;
+    modal.classList.toggle('modal--scrollable', hasMore);
+  };
+  modalScroll.addEventListener('scroll', updateScrollHint);
+  window.addEventListener('resize', () => {
+    if (overlay.classList.contains('is-open')) updateScrollHint();
+  });
+
+  const getFocusable = () =>
+    Array.from(modal.querySelectorAll('button, a[href], video, [tabindex]:not([tabindex="-1"])'))
+      .filter((el) => !el.disabled && el.offsetParent !== null);
+
+  const trapFocus = (e) => {
+    if (e.key !== 'Tab' || !overlay.classList.contains('is-open')) return;
+    const focusable = getFocusable();
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
 
   const openModal = (key) => {
     const p = PROJECTS[key];
@@ -109,15 +140,19 @@
       }
       modalMedia.appendChild(slot);
     }
+    modalScroll.scrollTop = 0;
     lastFocused = document.activeElement;
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
+    page.inert = true;
     modalClose.focus();
+    updateScrollHint();
   };
 
   const closeModal = () => {
     overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
+    page.inert = false;
     if (lastFocused) lastFocused.focus();
   };
 
@@ -130,5 +165,6 @@
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+    trapFocus(e);
   });
 })();

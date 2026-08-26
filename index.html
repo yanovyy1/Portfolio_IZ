@@ -69,14 +69,17 @@
 <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
-    <span class="modal-label" id="modalLabel"></span>
-    <h2 class="modal-title" id="modalTitle"></h2>
-    <div class="modal-meta">
-      <span id="modalRole"></span>
-      <span id="modalPeriod"></span>
+    <div class="modal-scroll" id="modalScroll">
+      <span class="modal-label" id="modalLabel"></span>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-meta">
+        <span id="modalRole"></span>
+        <span id="modalPeriod"></span>
+      </div>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-media" id="modalMedia"></div>
     </div>
-    <p class="modal-desc" id="modalDesc"></p>
-    <div class="modal-media" id="modalMedia"></div>
+    <div class="modal-scroll-fade" aria-hidden="true"></div>
   </div>
 </div>
 
