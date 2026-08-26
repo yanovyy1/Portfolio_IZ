@@ -21,12 +21,19 @@
       period: '2021 — 2023',
       desc: 'Рекламные креативы для Instagram, TikTok, Facebook и Google Ads. Разработал более 30 креативов, масштабированных с бюджетом от $10k за видео. Стабильно выпускал 3–6 рекламных паков в неделю без потери качества.',
     },
-    bbk: {
-      label: 'broadcast',
-      title: 'BBK Group',
-      role: 'Broadcast Designer',
-      period: '2020 — 2021',
-      desc: 'Оперативная графика для ТВ.',
+    other: {
+      label: 'проект',
+      title: 'Other',
+      role: '—',
+      period: '—',
+      desc: 'Заглушка — замените на название, роль и описание ещё одного проекта.',
+    },
+    denim: {
+      label: 'проект',
+      title: '495 Denim',
+      role: '—',
+      period: '—',
+      desc: 'Заглушка — замените на роль, период и описание проекта 495 Denim.',
     },
   };
 
@@ -92,7 +99,7 @@
     if (lastFocused) lastFocused.focus();
   };
 
-  document.querySelectorAll('.proj-card').forEach((card) => {
+  document.querySelectorAll('.proj-item').forEach((card) => {
     card.addEventListener('click', () => openModal(card.dataset.project));
   });
   modalClose.addEventListener('click', closeModal);
