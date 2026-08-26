@@ -322,7 +322,10 @@ button { background: none; border: 0; cursor: pointer; }
 
   .proj-item {
     height: auto;
-    min-height: clamp(260px, 48vh, 380px);
+  }
+
+  .shape-wrap {
+    flex: none;
   }
 
   .pi-denim { order: 1; }
