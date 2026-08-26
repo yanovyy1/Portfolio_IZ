@@ -255,67 +255,58 @@ img { max-width: 100%; display: block; }
   60%, 100% { top: 100%; }
 }
 
-/* ---------- About ---------- */
-.about-grid {
+/* ---------- Work layout: side info + ticket collage ---------- */
+.work-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 80px;
+  grid-template-columns: 240px 1fr;
+  gap: 56px;
   align-items: start;
 }
-.photo-frame {
-  aspect-ratio: 4 / 5;
-  border-radius: 14px;
-  background:
-    linear-gradient(160deg, #1c1c1a, #0a0a0a 70%);
-  border: 1px solid var(--line);
-  position: relative;
-  overflow: hidden;
+
+.work-side {
+  position: sticky;
+  top: 140px;
 }
-.photo-frame::after {
-  content: 'ФОТО';
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  letter-spacing: 0.2em;
+.side-name {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+  margin: 0 0 6px;
+  transform: rotate(-2deg);
+}
+.side-role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
   color: var(--fg-dim);
+  margin: 0 0 20px;
+}
+.side-bio {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--fg-dim);
+  margin: 0 0 24px;
 }
 
-.lead {
-  font-size: clamp(20px, 2.2vw, 26px);
-  font-weight: 400;
-  color: var(--fg);
-  line-height: 1.5;
-  margin: 0 0 24px;
-}
-.about-text p {
-  color: var(--fg-dim);
-  line-height: 1.8;
-  font-size: 16px;
-  margin: 0 0 24px;
-  max-width: 640px;
-}
 .skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
+  gap: 10px;
 }
 .skills li {
-  padding: 10px 18px;
+  padding: 8px 14px;
   border: 1px solid var(--line);
   border-radius: 100px;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--fg-dim);
 }
 
 /* ---------- Work: ticket collage ---------- */
 .ticket-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 64px 32px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 56px 28px;
 }
 
 .ticket-item {
@@ -479,10 +470,11 @@ img { max-width: 100%; display: block; }
 
 /* ---------- Mobile ---------- */
 @media (max-width: 860px) {
-  .about-grid { grid-template-columns: 1fr; gap: 40px; }
-  .photo-frame { max-width: 260px; }
-
-  .ticket-grid { grid-template-columns: repeat(2, 1fr); gap: 48px 24px; }
+  .work-layout { grid-template-columns: 1fr; gap: 36px; }
+  .work-side { position: static; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 20px; }
+  .side-name { font-size: 32px; margin: 0 16px 0 0; }
+  .side-role { margin: 0 0 12px; }
+  .side-bio { flex-basis: 100%; margin: 0 0 16px; max-width: 520px; }
 }
 
 @media (max-width: 720px) {

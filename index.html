@@ -20,7 +20,6 @@
   <a href="#top" class="logo">NOVYY<span>.</span></a>
 
   <nav class="nav" id="siteNav">
-    <a href="#about" data-nav>Обо мне</a>
     <a href="#work" data-nav>Проекты</a>
     <a href="#contact" data-nav>Контакты</a>
   </nav>
@@ -42,47 +41,34 @@
         <a href="#contact" class="btn btn-ghost">Связаться</a>
       </div>
     </div>
-    <a href="#about" class="scroll-cue" aria-label="Прокрутить вниз">
+    <a href="#work" class="scroll-cue" aria-label="Прокрутить вниз">
       <span>Скролл</span>
       <i></i>
     </a>
   </section>
 
-  <section class="section" id="about">
-    <div class="section-head reveal">
-      <span class="index">01</span>
-      <h2>Обо мне</h2>
-    </div>
-    <div class="about-grid">
-      <div class="about-photo reveal">
-        <div class="photo-frame"></div>
-      </div>
-      <div class="about-text">
-        <p class="lead reveal">
-          Заглушка текста «обо мне». Расскажите здесь, кто вы, чем занимаетесь
-          и какой подход к работе вам близок — в двух-трёх предложениях.
-        </p>
-        <p class="reveal">
-          Дополнительный абзац — опыт, специализация, инструменты. Замените
-          этот текст на реальную информацию о себе перед публикацией сайта.
-        </p>
-        <ul class="skills reveal">
-          <li>Веб-дизайн</li>
-          <li>Frontend-разработка</li>
-          <li>Брендинг</li>
-          <li>Motion / интеракции</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
   <section class="section" id="work">
     <div class="section-head reveal">
-      <span class="index">02</span>
+      <span class="index">01</span>
       <h2>Проекты</h2>
     </div>
 
-    <div class="ticket-grid">
+    <div class="work-layout">
+      <aside class="work-side reveal">
+        <p class="side-name">Novyy</p>
+        <p class="side-role">Дизайнер и разработчик</p>
+        <p class="side-bio">
+          Коротко о себе — пара предложений вместо целого блока «обо мне».
+          Замените на реальный текст.
+        </p>
+        <ul class="skills side-skills">
+          <li>Веб-дизайн</li>
+          <li>Frontend</li>
+          <li>Брендинг</li>
+        </ul>
+      </aside>
+
+      <div class="ticket-grid">
       <div class="ticket-item reveal ti-1">
         <span class="ticket-label">бренд-дизайн</span>
         <a href="#" class="ticket-card">
@@ -154,12 +140,13 @@
           <div class="ticket-stub"><span>made</span><span>2023</span></div>
         </a>
       </div>
+      </div>
     </div>
   </section>
 
   <section class="section contact" id="contact">
     <div class="section-head reveal">
-      <span class="index">03</span>
+      <span class="index">02</span>
       <h2>Контакты</h2>
     </div>
     <div class="contact-grid">
