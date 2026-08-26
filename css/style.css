@@ -177,87 +177,19 @@ button { background: none; border: 0; cursor: pointer; }
   justify-content: center;
 }
 
-.shape {
-  --r: 0deg;
-  display: block;
-  background: var(--fg);
-  opacity: 0.1;
-  transform: rotate(var(--r));
-  transition: transform 0.5s var(--ease), opacity 0.5s var(--ease);
+.shape-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.5));
+  transition: transform 0.5s var(--ease), filter 0.5s var(--ease);
 }
-.proj-item:hover .shape,
-.proj-item:focus-visible .shape {
-  opacity: 0.17;
-  transform: rotate(var(--r)) scale(1.08);
-}
-
-/* Freelance — figure-eight of two stacked circles */
-.shape-blob8 {
-  position: relative;
-  width: min(60%, 120px);
-  aspect-ratio: 3 / 5;
-  background: none;
-  opacity: 1;
-}
-.blob-c {
-  position: absolute;
-  left: 50%;
-  border-radius: 50%;
-  background: var(--fg);
-  opacity: 0.1;
-  transform: translateX(-50%);
-  transition: transform 0.5s var(--ease), opacity 0.5s var(--ease);
-}
-.blob-c-top { top: 0; width: 76%; aspect-ratio: 1 / 1; }
-.blob-c-bottom { bottom: 0; width: 100%; aspect-ratio: 1 / 1; }
-.proj-item:hover .blob-c,
-.proj-item:focus-visible .blob-c {
-  opacity: 0.17;
-}
-.proj-item:hover .blob-c-top,
-.proj-item:focus-visible .blob-c-top { transform: translateX(-50%) scale(1.06); }
-.proj-item:hover .blob-c-bottom,
-.proj-item:focus-visible .blob-c-bottom { transform: translateX(-50%) scale(1.06); }
-
-/* Prequel app — eight-pointed burst */
-.shape-star {
-  width: min(70%, 130px);
-  aspect-ratio: 1 / 1;
-  clip-path: polygon(
-    50% 2%, 58% 34%, 84% 16%, 66% 42%,
-    98% 50%, 66% 58%, 84% 84%, 58% 66%,
-    50% 98%, 42% 66%, 16% 84%, 34% 58%,
-    2% 50%, 34% 42%, 16% 16%, 42% 34%
-  );
-}
-
-/* Other — torn diagonal strip */
-.shape-strip {
-  --r: -8deg;
-  width: min(85%, 160px);
-  aspect-ratio: 5 / 2;
-  clip-path: polygon(
-    6% 0%, 0% 18%, 8% 38%, 2% 58%, 6% 80%, 0% 100%,
-    94% 100%, 100% 82%, 92% 62%, 98% 42%, 94% 20%, 100% 0%
-  );
-}
-
-/* Glam app — irregular torn triangle */
-.shape-triangle {
-  width: min(65%, 120px);
-  aspect-ratio: 1 / 1;
-  clip-path: polygon(48% 4%, 95% 90%, 4% 96%);
-}
-
-/* 495 Denim — jagged patch */
-.shape-patch {
-  --r: 5deg;
-  width: min(78%, 150px);
-  aspect-ratio: 4 / 3;
-  clip-path: polygon(
-    10% 0%, 2% 14%, 12% 28%, 0% 44%, 10% 60%, 2% 78%, 8% 100%,
-    92% 100%, 100% 84%, 90% 68%, 98% 50%, 88% 32%, 96% 16%, 90% 0%
-  );
+.proj-item:hover .shape-img,
+.proj-item:focus-visible .shape-img {
+  transform: scale(1.06) rotate(-1.5deg);
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
 }
 
 /* ---------- Modal ---------- */
