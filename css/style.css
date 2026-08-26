@@ -340,19 +340,19 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .modal-media {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 10px;
 }
 .media-slot {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 9 / 16;
   border: 1px dashed var(--line);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 8px;
-  font-size: 11px;
+  padding: 6px;
+  font-size: 10px;
   letter-spacing: 0.04em;
   color: var(--fg-dim);
 }

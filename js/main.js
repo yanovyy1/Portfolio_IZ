@@ -6,6 +6,7 @@
       role: 'Motion Design',
       period: '2018 — н.в.',
       desc: 'Motion Design полного цикла — от сценария до финального монтажа, саунд-дизайна и цветокора. Анимация типографики, иконок, иллюстраций и UI-элементов. Performance-креативы для Tier-1 рынков (США, Европа, Азия) — Instagram, TikTok, Facebook, Google.',
+      mediaCount: 3,
     },
     glam: {
       label: 'ai-дизайн',
@@ -13,6 +14,7 @@
       role: 'Lead Motion Designer / AI Artist',
       period: '2023 — 2024',
       desc: 'Руководил командой контента (5 моушн/графических дизайнеров + 5–7 аутсорс). Выстроил производственную структуру — 50+ креативов в неделю. Вместе с командой привели в приложение более 1 млн пользователей.',
+      mediaCount: 3,
     },
     prequel: {
       label: 'реклама',
@@ -20,6 +22,7 @@
       role: 'Marketing Motion Designer',
       period: '2021 — 2023',
       desc: 'Рекламные креативы для Instagram, TikTok, Facebook и Google Ads. Разработал более 30 креативов, масштабированных с бюджетом от $10k за видео. Стабильно выпускал 3–6 рекламных паков в неделю без потери качества.',
+      mediaCount: 3,
     },
     other: {
       label: 'проект',
@@ -27,6 +30,7 @@
       role: '—',
       period: '—',
       desc: 'Заглушка — замените на название, роль и описание ещё одного проекта.',
+      mediaCount: 3,
     },
     denim: {
       label: 'проект',
@@ -34,6 +38,7 @@
       role: '—',
       period: '—',
       desc: 'Заглушка — замените на роль, период и описание проекта 495 Denim.',
+      mediaCount: 10,
     },
   };
 
@@ -81,10 +86,11 @@
     modalPeriod.textContent = p.period;
     modalDesc.textContent = p.desc;
     modalMedia.innerHTML = '';
-    for (let i = 0; i < 3; i += 1) {
+    const count = p.mediaCount || 3;
+    for (let i = 0; i < count; i += 1) {
       const slot = document.createElement('div');
       slot.className = 'media-slot';
-      slot.textContent = 'Пример работы';
+      slot.textContent = `Видео ${i + 1}`;
       modalMedia.appendChild(slot);
     }
     lastFocused = document.activeElement;
