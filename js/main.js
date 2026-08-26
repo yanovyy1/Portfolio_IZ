@@ -60,18 +60,4 @@
 
     document.addEventListener('mouseleave', () => cursorDot.classList.remove('is-active'));
   }
-
-  /* ---------- Work row hover preview ---------- */
-  const preview = document.getElementById('workPreview');
-  const workRows = document.querySelectorAll('.work-row');
-
-  if (isFinePointer && preview) {
-    workRows.forEach((row) => {
-      row.addEventListener('mouseenter', () => preview.classList.add('is-active'));
-      row.addEventListener('mouseleave', () => preview.classList.remove('is-active'));
-      row.addEventListener('mousemove', (e) => {
-        preview.style.transform = `translate(${e.clientX + 24}px, ${e.clientY - 90}px) scale(1)`;
-      });
-    });
-  }
 })();

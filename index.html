@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23000%22/><text x=%2250%22 y=%2266%22 font-size=%2260%22 font-family=%22sans-serif%22 fill=%22%23fff%22 text-anchor=%22middle%22>N</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -34,11 +34,8 @@
 
   <section class="hero" id="hero">
     <div class="hero-inner">
-      <p class="eyebrow reveal">Портфолио — 2026</p>
-      <h1 class="hero-title">
-        <span class="line reveal">Привет, я</span>
-        <span class="line reveal hero-name">Novyy<span class="dot">.</span></span>
-      </h1>
+      <p class="signature reveal">Novyy</p>
+      <h1 class="wordmark reveal">Portfolio</h1>
       <p class="hero-sub reveal">Дизайнер и разработчик — создаю сайты и продукты,<br class="br-desktop"> в которых форма служит содержанию.</p>
       <div class="hero-cta reveal">
         <a href="#work" class="btn">Смотреть проекты</a>
@@ -85,34 +82,79 @@
       <h2>Проекты</h2>
     </div>
 
-    <div class="work-list">
-      <a href="#" class="work-row reveal" data-preview="1">
-        <span class="work-num">01</span>
-        <span class="work-title">Название проекта</span>
-        <span class="work-tags">Веб-дизайн · 2026</span>
-        <span class="work-arrow">↗</span>
-      </a>
-      <a href="#" class="work-row reveal" data-preview="2">
-        <span class="work-num">02</span>
-        <span class="work-title">Название проекта</span>
-        <span class="work-tags">Брендинг · 2025</span>
-        <span class="work-arrow">↗</span>
-      </a>
-      <a href="#" class="work-row reveal" data-preview="3">
-        <span class="work-num">03</span>
-        <span class="work-title">Название проекта</span>
-        <span class="work-tags">Разработка · 2025</span>
-        <span class="work-arrow">↗</span>
-      </a>
-      <a href="#" class="work-row reveal" data-preview="4">
-        <span class="work-num">04</span>
-        <span class="work-title">Название проекта</span>
-        <span class="work-tags">Продукт · 2024</span>
-        <span class="work-arrow">↗</span>
-      </a>
-    </div>
+    <div class="ticket-grid">
+      <div class="ticket-item reveal ti-1">
+        <span class="ticket-label">бренд-дизайн</span>
+        <a href="#" class="ticket-card">
+          <div class="ticket-top">
+            <span class="ticket-mark">01</span>
+            <span class="ticket-year">2026</span>
+          </div>
+          <div class="ticket-title">Название проекта</div>
+          <div class="ticket-stub"><span>made</span><span>2025–26</span></div>
+        </a>
+      </div>
 
-    <div class="work-preview" id="workPreview" aria-hidden="true"></div>
+      <div class="ticket-item reveal ti-2">
+        <span class="ticket-label">веб-сайт</span>
+        <a href="#" class="ticket-card">
+          <div class="ticket-top">
+            <span class="ticket-mark">02</span>
+            <span class="ticket-year">2025</span>
+          </div>
+          <div class="ticket-title">Название проекта</div>
+          <div class="ticket-stub"><span>made</span><span>2025</span></div>
+        </a>
+      </div>
+
+      <div class="ticket-item reveal ti-3">
+        <span class="ticket-label">кампания</span>
+        <a href="#" class="ticket-card">
+          <div class="ticket-top">
+            <span class="ticket-mark">03</span>
+            <span class="ticket-year">2025</span>
+          </div>
+          <div class="ticket-title">Название проекта</div>
+          <div class="ticket-stub"><span>made</span><span>2024–25</span></div>
+        </a>
+      </div>
+
+      <div class="ticket-item reveal ti-4">
+        <span class="ticket-label">интерфейс</span>
+        <a href="#" class="ticket-card">
+          <div class="ticket-top">
+            <span class="ticket-mark">04</span>
+            <span class="ticket-year">2024</span>
+          </div>
+          <div class="ticket-title">Название проекта</div>
+          <div class="ticket-stub"><span>made</span><span>2024</span></div>
+        </a>
+      </div>
+
+      <div class="ticket-item reveal ti-5">
+        <span class="ticket-label">видео</span>
+        <a href="#" class="ticket-card">
+          <div class="ticket-top">
+            <span class="ticket-mark">05</span>
+            <span class="ticket-year">2024</span>
+          </div>
+          <div class="ticket-title">Название проекта</div>
+          <div class="ticket-stub"><span>made</span><span>2023–24</span></div>
+        </a>
+      </div>
+
+      <div class="ticket-item reveal ti-6">
+        <span class="ticket-label">айдентика</span>
+        <a href="#" class="ticket-card">
+          <div class="ticket-top">
+            <span class="ticket-mark">06</span>
+            <span class="ticket-year">2023</span>
+          </div>
+          <div class="ticket-title">Название проекта</div>
+          <div class="ticket-stub"><span>made</span><span>2023</span></div>
+        </a>
+      </div>
+    </div>
   </section>
 
   <section class="section contact" id="contact">
