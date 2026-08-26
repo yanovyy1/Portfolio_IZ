@@ -320,8 +320,6 @@ img { max-width: 100%; display: block; }
 .ti-2 { --r: 2.5deg; margin-top: 38px; }
 .ti-3 { --r: -2deg; margin-top: -8px; }
 .ti-4 { --r: 3deg; margin-top: 22px; }
-.ti-5 { --r: -2.5deg; margin-top: -14px; }
-.ti-6 { --r: 2deg; margin-top: 14px; }
 
 .ticket-label {
   display: block;
