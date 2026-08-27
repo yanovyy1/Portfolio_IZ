@@ -74,6 +74,7 @@
      canvas and copy the mask's luminance into the color frame's alpha
      channel, giving true per-pixel transparency independent of the
      page background. */
+  const touchCards = [];
   document.querySelectorAll('.proj-item').forEach((card) => {
     const canvas = card.querySelector('.shape-vid');
     const video = card.querySelector('.shape-src');
@@ -82,6 +83,7 @@
     const w = canvas.width;
     const h = canvas.height;
     let scheduled = null;
+    let isPlaying = false;
 
     const scheduleNext = () => {
       if (video.requestVideoFrameCallback) {
@@ -105,11 +107,17 @@
       scheduleNext();
     }
 
-    const play = () => {
+    const activate = () => {
+      if (isPlaying) return;
+      isPlaying = true;
+      card.classList.add('is-playing');
       video.currentTime = 0;
       video.play().then(scheduleNext).catch(() => {});
     };
-    const stop = () => {
+    const deactivate = () => {
+      if (!isPlaying) return;
+      isPlaying = false;
+      card.classList.remove('is-playing');
       video.pause();
       video.currentTime = 0;
       if (scheduled) {
@@ -119,11 +127,43 @@
       }
       ctx.clearRect(0, 0, w, h);
     };
-    card.addEventListener('mouseenter', play);
-    card.addEventListener('mouseleave', stop);
-    card.addEventListener('focus', play);
-    card.addEventListener('blur', stop);
+
+    card.addEventListener('focus', activate);
+    card.addEventListener('blur', deactivate);
+
+    if (isFinePointer) {
+      card.addEventListener('mouseenter', activate);
+      card.addEventListener('mouseleave', deactivate);
+    } else {
+      touchCards.push({ card, activate, deactivate });
+    }
   });
+
+  /* On touch devices there's no hover: play each shape's animation while
+     it's meaningfully in view, so scrolling a card into frame plays it
+     instead of requiring a tap. Previously this relied on CSS :hover, which
+     iOS/Android can leave "stuck" on a tapped button until the next tap
+     elsewhere - the shape's video (paused, blank canvas) then desynced from
+     that stuck hover state and looked like a frozen black shape while
+     scrolling away. */
+  if (touchCards.length && 'IntersectionObserver' in window) {
+    const byTarget = new Map(touchCards.map((entry) => [entry.card, entry]));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = byTarget.get(entry.target);
+          if (!target) return;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+            target.activate();
+          } else {
+            target.deactivate();
+          }
+        });
+      },
+      { threshold: [0, 0.4, 1] }
+    );
+    touchCards.forEach(({ card }) => observer.observe(card));
+  }
 
   /* ---------- Project modal ---------- */
   const page = document.querySelector('.page');

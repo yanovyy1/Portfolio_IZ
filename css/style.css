@@ -198,19 +198,37 @@ button { background: none; border: 0; cursor: pointer; }
   filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.5));
   transition: transform 0.5s var(--ease), filter 0.5s var(--ease), opacity 0.4s var(--ease);
 }
+/* Each shape's hover video is packed with margin around the actual
+   silhouette (so the loop's widest phase never clips) - the static PNG has
+   no such margin, so at equal box size the video content reads visibly
+   smaller. --vid-scale (measured per shape from the packed video's alpha
+   bbox at its loop start frame vs the static PNG's full-bleed crop)
+   compensates so switching PNG->video doesn't shrink the shape. It's a
+   constant, not part of the hover transition, so nothing resizes on hover -
+   only opacity crossfades. */
 .shape-vid {
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.5s var(--ease), opacity 0.4s var(--ease);
+  transform: scale(var(--vid-scale, 1)) rotate(-1.5deg);
+  transition: opacity 0.4s var(--ease);
 }
-.proj-item:hover .shape-img,
+.pi-freelance .shape-vid { --vid-scale: 1.13; }
+.pi-prequel .shape-vid { --vid-scale: 1.18; }
+.pi-other .shape-vid { --vid-scale: 1.18; }
+.pi-glam .shape-vid { --vid-scale: 1.23; }
+.pi-denim .shape-vid { --vid-scale: 1.12; }
+
+/* Playback state is driven by JS (.is-playing), not CSS :hover - on touch
+   devices tapping a button can leave a "sticky" :hover applied until the
+   next tap elsewhere, which desynced from the JS video (paused, blank
+   canvas) and looked like a frozen black shape while scrolling away. */
+.proj-item.is-playing .shape-img,
 .proj-item:focus-visible .shape-img {
   opacity: 0;
 }
-.proj-item:hover .shape-vid,
+.proj-item.is-playing .shape-vid,
 .proj-item:focus-visible .shape-vid {
   opacity: 1;
-  transform: scale(1.06) rotate(-1.5deg);
 }
 
 /* ---------- Modal ---------- */
@@ -393,6 +411,17 @@ button { background: none; border: 0; cursor: pointer; }
   .pi-prequel .shape-wrap { aspect-ratio: 1154 / 952; }
   .pi-other .shape-wrap { aspect-ratio: 1378 / 573; }
   .pi-denim .shape-wrap { aspect-ratio: 1024 / 716; }
+
+  /* Desktop hover-size compensation assumes the desktop grid's box
+     proportions; mobile's per-shape aspect-ratio boxes above are different,
+     so reset to unscaled here rather than carry over an unverified value. */
+  .pi-freelance .shape-vid,
+  .pi-prequel .shape-vid,
+  .pi-other .shape-vid,
+  .pi-glam .shape-vid,
+  .pi-denim .shape-vid {
+    --vid-scale: 1;
+  }
 
   .pi-denim { order: 1; }
   .pi-glam { order: 2; }
