@@ -11,7 +11,9 @@
         'Performance creatives for Tier-1 markets (US, Europe, Asia) — Instagram, TikTok, Facebook, Google',
         'Fast iteration under tight deadlines, no quality lost',
       ],
-      mediaCount: 3,
+      media: ['freelance_4.mp4', 'freelance_5.mp4'],
+      mediaCount: 9,
+      mediaColumns: 3,
     },
     glam: {
       label: 'ai design',
@@ -25,6 +27,8 @@
         'Helped grow the app to 1M+ users',
       ],
       media: ['glam_1.mp4', 'glam_2.mp4'],
+      mediaCount: 9,
+      mediaColumns: 3,
     },
     prequel: {
       label: 'advertising',
@@ -52,7 +56,12 @@
         'Pulled from several client projects — names withheld under NDA',
         'Made with Midjourney, Kling, Seedance, Nano Banana & other AI tools',
       ],
-      media: ['Other_1.mp4', 'Other_2.mp4', 'Other_3.mp4', 'Other_4.mp4', 'Other_5.mp4'],
+      media: [
+        'Other_1.mp4', 'Other_2.mp4', 'Other_3.mp4',
+        'ai_01.mp4', 'ai_02.mp4', 'ai_03.mp4', 'ai_04.mp4', 'ai_05.mp4',
+      ],
+      mediaCount: 9,
+      mediaColumns: 3,
     },
     denim: {
       label: 'content',
@@ -67,6 +76,8 @@
         'Sourced UGC creators, wrote briefs and reviewed delivery',
       ],
       media: ['495_01.mp4', '495_02.mp4', '495_03.mp4', '495_04.mp4', '495_05.mp4', '495_06.mp4', '495_07.mp4', '495_08.mp4'],
+      mediaCount: 9,
+      mediaColumns: 3,
     },
   };
 
@@ -225,7 +236,7 @@
     modalMedia.innerHTML = '';
     modalMedia.classList.toggle('modal-media--fixed3', p.mediaColumns === 3);
     const media = p.media || [];
-    const count = media.length || p.mediaCount || 3;
+    const count = Math.max(media.length, p.mediaCount || 0) || 3;
     for (let i = 0; i < count; i += 1) {
       const file = media[i];
       const slot = document.createElement('div');
