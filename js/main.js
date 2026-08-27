@@ -1,43 +1,71 @@
 (() => {
   const PROJECTS = {
     freelance: {
-      label: 'фриланс',
+      label: 'freelance',
       title: 'Freelance',
       role: 'Motion Design',
-      period: '2018 — н.в.',
-      desc: 'Motion Design полного цикла — от сценария до финального монтажа, саунд-дизайна и цветокора. Анимация типографики, иконок, иллюстраций и UI-элементов. Performance-креативы для Tier-1 рынков (США, Европа, Азия) — Instagram, TikTok, Facebook, Google.',
+      period: '2018 — Present',
+      desc: [
+        'Full-cycle motion design — script to final edit, sound design, color grade',
+        'Typography, icon, illustration & UI animation',
+        'Performance creatives for Tier-1 markets (US, Europe, Asia) — Instagram, TikTok, Facebook, Google',
+        'Fast iteration under tight deadlines, no quality lost',
+      ],
       mediaCount: 3,
     },
     glam: {
-      label: 'ai-дизайн',
+      label: 'ai design',
       title: 'Glam app',
       role: 'Lead Motion Designer / AI Artist',
       period: '2023 — 2024',
-      desc: 'Руководил командой контента (5 моушн/графических дизайнеров + 5–7 аутсорс). Выстроил производственную структуру — 50+ креативов в неделю. Вместе с командой привели в приложение более 1 млн пользователей.',
+      desc: [
+        'Led a content team of 5 designers + 5–7 outsource creators',
+        'Built a production pipeline delivering 50+ creatives a week',
+        'Tested new AI tools and helped integrate them into the product',
+        'Helped grow the app to 1M+ users',
+      ],
       media: ['glam_1.mp4', 'glam_2.mp4'],
     },
     prequel: {
-      label: 'реклама',
+      label: 'advertising',
       title: 'Prequel app',
       role: 'Marketing Motion Designer',
       period: '2021 — 2023',
-      desc: 'Рекламные креативы для Instagram, TikTok, Facebook и Google Ads. Разработал более 30 креативов, масштабированных с бюджетом от $10k за видео. Стабильно выпускал 3–6 рекламных паков в неделю без потери качества.',
-      mediaCount: 3,
+      desc: [
+        'Ad creatives for Instagram, TikTok, Facebook & Google Ads',
+        'Trend research and new creative concepts from scratch',
+        'Close collaboration with product & analytics teams, A/B testing',
+        '30+ creatives shipped, scaled with budgets from $10k/video',
+        'Steady output of 3–6 ad packs a week, zero missed deadlines',
+      ],
+      mediaCount: 9,
+      mediaPlaceholder: 'NDA',
+      mediaColumns: 3,
     },
     other: {
-      label: 'проект',
-      title: 'Other',
-      role: '—',
-      period: '—',
-      desc: 'Заглушка — замените на название, роль и описание ещё одного проекта.',
+      label: 'showcase',
+      title: 'AI Generations',
+      role: 'Generative AI',
+      period: 'Various projects',
+      desc: [
+        'A curated set of AI-generated visuals and clips',
+        'Pulled from several client projects — names withheld under NDA',
+        'Made with Midjourney, Kling, Seedance, Nano Banana & other AI tools',
+      ],
       media: ['Other_1.mp4', 'Other_2.mp4', 'Other_3.mp4', 'Other_4.mp4', 'Other_5.mp4'],
     },
     denim: {
-      label: 'проект',
+      label: 'content',
       title: '495 Denim',
-      role: '—',
-      period: '—',
-      desc: 'Заглушка — замените на роль, период и описание проекта 495 Denim.',
+      role: 'Content Creator',
+      period: '',
+      desc: [
+        'Motion & graphic design — ad creatives and content for IG, TikTok, FB, Google Ads',
+        'Print/apparel visuals and packaging concepts',
+        'Seasonal concept planning and photo retouching',
+        'Audience, competitor & trend analysis with monthly reporting',
+        'Sourced UGC creators, wrote briefs and reviewed delivery',
+      ],
       media: ['495_01.mp4', '495_02.mp4', '495_03.mp4', '495_04.mp4', '495_05.mp4', '495_06.mp4', '495_07.mp4', '495_08.mp4'],
     },
   };
@@ -183,9 +211,19 @@
     modalLabel.textContent = p.label;
     modalTitle.textContent = p.title;
     modalRole.textContent = p.role;
-    modalPeriod.textContent = p.period;
-    modalDesc.textContent = p.desc;
+    modalPeriod.textContent = p.period || '';
+    modalPeriod.style.display = p.period ? '' : 'none';
+    modalDesc.innerHTML = '';
+    const descList = document.createElement('ul');
+    descList.className = 'modal-desc-list';
+    (Array.isArray(p.desc) ? p.desc : [p.desc]).forEach((line) => {
+      const li = document.createElement('li');
+      li.textContent = line;
+      descList.appendChild(li);
+    });
+    modalDesc.appendChild(descList);
     modalMedia.innerHTML = '';
+    modalMedia.classList.toggle('modal-media--fixed3', p.mediaColumns === 3);
     const media = p.media || [];
     const count = media.length || p.mediaCount || 3;
     for (let i = 0; i < count; i += 1) {
@@ -203,7 +241,7 @@
       } else {
         slot.className = 'media-slot';
         const label = document.createElement('span');
-        label.textContent = `Видео ${i + 1}`;
+        label.textContent = p.mediaPlaceholder || `Video ${i + 1}`;
         slot.appendChild(label);
       }
       modalMedia.appendChild(slot);
