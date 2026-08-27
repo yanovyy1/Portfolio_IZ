@@ -66,7 +66,12 @@
     document.addEventListener('mouseleave', () => cursorDot.classList.remove('is-active'));
   }
 
-  /* ---------- Hover-to-play shape animations ----------
+  /* ---------- Hover-to-play shape animations (fine pointers only) ----------
+     Touch devices only ever show the static PNG - no video, no canvas
+     drawing. Tried playing the animation on scroll-into-view on mobile
+     first, but it read as distracting/glitchy there, so it's off entirely
+     rather than gated by a heuristic.
+
      Each source video packs two stacked frames per shape: plain RGB
      color on top, a grayscale alpha mask on the bottom (baked in with
      ffmpeg, since no single video codec reliably decodes real alpha
@@ -74,95 +79,59 @@
      canvas and copy the mask's luminance into the color frame's alpha
      channel, giving true per-pixel transparency independent of the
      page background. */
-  const touchCards = [];
-  document.querySelectorAll('.proj-item').forEach((card) => {
-    const canvas = card.querySelector('.shape-vid');
-    const video = card.querySelector('.shape-src');
-    if (!canvas || !video) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    let scheduled = null;
-    let isPlaying = false;
+  if (isFinePointer) {
+    document.querySelectorAll('.proj-item').forEach((card) => {
+      const canvas = card.querySelector('.shape-vid');
+      const video = card.querySelector('.shape-src');
+      if (!canvas || !video) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      let scheduled = null;
 
-    const scheduleNext = () => {
-      if (video.requestVideoFrameCallback) {
-        scheduled = video.requestVideoFrameCallback(drawFrame);
-      } else {
-        scheduled = requestAnimationFrame(drawFrame);
+      const scheduleNext = () => {
+        if (video.requestVideoFrameCallback) {
+          scheduled = video.requestVideoFrameCallback(drawFrame);
+        } else {
+          scheduled = requestAnimationFrame(drawFrame);
+        }
+      };
+
+      function drawFrame() {
+        if (video.paused || video.ended) return;
+        ctx.drawImage(video, 0, 0, w, h, 0, 0, w, h);
+        const frame = ctx.getImageData(0, 0, w, h);
+        ctx.drawImage(video, 0, h, w, h, 0, 0, w, h);
+        const mask = ctx.getImageData(0, 0, w, h).data;
+        const data = frame.data;
+        for (let i = 0; i < data.length; i += 4) {
+          data[i + 3] = mask[i];
+        }
+        ctx.putImageData(frame, 0, 0);
+        scheduleNext();
       }
-    };
 
-    function drawFrame() {
-      if (video.paused || video.ended) return;
-      ctx.drawImage(video, 0, 0, w, h, 0, 0, w, h);
-      const frame = ctx.getImageData(0, 0, w, h);
-      ctx.drawImage(video, 0, h, w, h, 0, 0, w, h);
-      const mask = ctx.getImageData(0, 0, w, h).data;
-      const data = frame.data;
-      for (let i = 0; i < data.length; i += 4) {
-        data[i + 3] = mask[i];
-      }
-      ctx.putImageData(frame, 0, 0);
-      scheduleNext();
-    }
-
-    const activate = () => {
-      if (isPlaying) return;
-      isPlaying = true;
-      card.classList.add('is-playing');
-      video.currentTime = 0;
-      video.play().then(scheduleNext).catch(() => {});
-    };
-    const deactivate = () => {
-      if (!isPlaying) return;
-      isPlaying = false;
-      card.classList.remove('is-playing');
-      video.pause();
-      video.currentTime = 0;
-      if (scheduled) {
-        if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(scheduled);
-        else cancelAnimationFrame(scheduled);
-        scheduled = null;
-      }
-      ctx.clearRect(0, 0, w, h);
-    };
-
-    card.addEventListener('focus', activate);
-    card.addEventListener('blur', deactivate);
-
-    if (isFinePointer) {
-      card.addEventListener('mouseenter', activate);
-      card.addEventListener('mouseleave', deactivate);
-    } else {
-      touchCards.push({ card, activate, deactivate });
-    }
-  });
-
-  /* On touch devices there's no hover: play each shape's animation while
-     it's meaningfully in view, so scrolling a card into frame plays it
-     instead of requiring a tap. Previously this relied on CSS :hover, which
-     iOS/Android can leave "stuck" on a tapped button until the next tap
-     elsewhere - the shape's video (paused, blank canvas) then desynced from
-     that stuck hover state and looked like a frozen black shape while
-     scrolling away. */
-  if (touchCards.length && 'IntersectionObserver' in window) {
-    const byTarget = new Map(touchCards.map((entry) => [entry.card, entry]));
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const target = byTarget.get(entry.target);
-          if (!target) return;
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
-            target.activate();
-          } else {
-            target.deactivate();
-          }
-        });
-      },
-      { threshold: [0, 0.4, 1] }
-    );
-    touchCards.forEach(({ card }) => observer.observe(card));
+      const play = () => {
+        card.classList.add('is-playing');
+        video.currentTime = 0;
+        video.play().then(scheduleNext).catch(() => {});
+      };
+      const stop = () => {
+        card.classList.remove('is-playing');
+        video.pause();
+        video.currentTime = 0;
+        if (scheduled) {
+          if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(scheduled);
+          else cancelAnimationFrame(scheduled);
+          scheduled = null;
+        }
+        ctx.clearRect(0, 0, w, h);
+      };
+      card.addEventListener('mouseenter', play);
+      card.addEventListener('mouseleave', stop);
+      card.addEventListener('focus', play);
+      card.addEventListener('blur', stop);
+    });
   }
 
   /* ---------- Project modal ---------- */
