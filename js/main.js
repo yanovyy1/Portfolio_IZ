@@ -66,17 +66,58 @@
     document.addEventListener('mouseleave', () => cursorDot.classList.remove('is-active'));
   }
 
-  /* ---------- Hover-to-play shape animations ---------- */
+  /* ---------- Hover-to-play shape animations ----------
+     Each source video packs two stacked frames per shape: plain RGB
+     color on top, a grayscale alpha mask on the bottom (baked in with
+     ffmpeg, since no single video codec reliably decodes real alpha
+     everywhere). On every video frame we redraw both halves onto a
+     canvas and copy the mask's luminance into the color frame's alpha
+     channel, giving true per-pixel transparency independent of the
+     page background. */
   document.querySelectorAll('.proj-item').forEach((card) => {
-    const vid = card.querySelector('.shape-vid');
-    if (!vid) return;
+    const canvas = card.querySelector('.shape-vid');
+    const video = card.querySelector('.shape-src');
+    if (!canvas || !video) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    let scheduled = null;
+
+    const scheduleNext = () => {
+      if (video.requestVideoFrameCallback) {
+        scheduled = video.requestVideoFrameCallback(drawFrame);
+      } else {
+        scheduled = requestAnimationFrame(drawFrame);
+      }
+    };
+
+    function drawFrame() {
+      if (video.paused || video.ended) return;
+      ctx.drawImage(video, 0, 0, w, h, 0, 0, w, h);
+      const frame = ctx.getImageData(0, 0, w, h);
+      ctx.drawImage(video, 0, h, w, h, 0, 0, w, h);
+      const mask = ctx.getImageData(0, 0, w, h).data;
+      const data = frame.data;
+      for (let i = 0; i < data.length; i += 4) {
+        data[i + 3] = mask[i];
+      }
+      ctx.putImageData(frame, 0, 0);
+      scheduleNext();
+    }
+
     const play = () => {
-      vid.currentTime = 0;
-      vid.play().catch(() => {});
+      video.currentTime = 0;
+      video.play().then(scheduleNext).catch(() => {});
     };
     const stop = () => {
-      vid.pause();
-      vid.currentTime = 0;
+      video.pause();
+      video.currentTime = 0;
+      if (scheduled) {
+        if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(scheduled);
+        else cancelAnimationFrame(scheduled);
+        scheduled = null;
+      }
+      ctx.clearRect(0, 0, w, h);
     };
     card.addEventListener('mouseenter', play);
     card.addEventListener('mouseleave', stop);
