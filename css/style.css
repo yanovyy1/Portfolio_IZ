@@ -101,30 +101,13 @@ button { background: none; border: 0; cursor: pointer; }
   text-align: center;
 }
 
-/* Font pair: handwritten name + a small bold-sans tag underneath, the same
-   pairing pattern repeated on each project card below (proj-tag + proj-name). */
 .title-line {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  margin: 0;
-}
-.title-script {
   font-family: 'Caveat', cursive;
   font-weight: 700;
-  font-size: clamp(26px, 4.6vh, 42px);
+  font-size: clamp(24px, 4vh, 38px);
   letter-spacing: 0.01em;
   color: var(--fg);
-  line-height: 1;
-}
-.title-tag {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: clamp(10px, 1.5vh, 13px);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
+  margin: 0;
 }
 
 .contact-icons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -185,26 +168,6 @@ button { background: none; border: 0; cursor: pointer; }
   outline-offset: 8px;
   border-radius: 12px;
 }
-
-/* Small bold-sans kicker paired with each card's handwritten name - same
-   pairing pattern as the header (title-script + title-tag). Text is filled
-   in from PROJECTS.label in main.js, not hardcoded here, so it can't drift
-   out of sync with the modal's kicker. A slight per-shape tilt keeps it from
-   reading as a rigid UI label. */
-.proj-tag {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-  transform: rotate(var(--tag-tilt, 0deg));
-}
-.pi-freelance .proj-tag { --tag-tilt: -2deg; }
-.pi-prequel .proj-tag { --tag-tilt: 1.5deg; }
-.pi-other .proj-tag { --tag-tilt: -1.5deg; }
-.pi-glam .proj-tag { --tag-tilt: 2deg; }
-.pi-denim .proj-tag { --tag-tilt: -2.5deg; }
 
 .proj-name {
   font-family: 'Caveat', cursive;
@@ -447,8 +410,7 @@ button { background: none; border: 0; cursor: pointer; }
 @media (max-width: 720px) {
   .page { height: auto; min-height: 100dvh; padding: 16px 16px; gap: 14px; }
 
-  .title-script { font-size: clamp(20px, 3.4vh, 28px); }
-  .title-tag { font-size: clamp(9px, 1.3vh, 11px); letter-spacing: 0.18em; }
+  .title-line { font-size: clamp(22px, 3.6vh, 30px); }
 
   .stage {
     display: flex;

@@ -80,14 +80,6 @@
     },
   };
 
-  /* ---------- Card category tags (reuses PROJECTS.label, single source of
-     truth with the modal kicker) ---------- */
-  document.querySelectorAll('.proj-item').forEach((card) => {
-    const tag = card.querySelector('.proj-tag');
-    const p = PROJECTS[card.dataset.project];
-    if (tag && p) tag.textContent = p.label;
-  });
-
   /* ---------- Fade-in on load ---------- */
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
