@@ -66,6 +66,24 @@
     document.addEventListener('mouseleave', () => cursorDot.classList.remove('is-active'));
   }
 
+  /* ---------- Hover-to-play shape animations ---------- */
+  document.querySelectorAll('.proj-item').forEach((card) => {
+    const vid = card.querySelector('.shape-vid');
+    if (!vid) return;
+    const play = () => {
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+    };
+    const stop = () => {
+      vid.pause();
+      vid.currentTime = 0;
+    };
+    card.addEventListener('mouseenter', play);
+    card.addEventListener('mouseleave', stop);
+    card.addEventListener('focus', play);
+    card.addEventListener('blur', stop);
+  });
+
   /* ---------- Project modal ---------- */
   const page = document.querySelector('.page');
   const overlay = document.getElementById('modalOverlay');
