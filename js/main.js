@@ -9,7 +9,6 @@
         'Full-cycle motion design — script to final edit, sound design, color grade',
         'Typography, icon, illustration & UI animation',
         'Performance creatives for Tier-1 markets (US, Europe, Asia) — Instagram, TikTok, Facebook, Google',
-        'Fast iteration under tight deadlines, no quality lost',
       ],
       media: ['freelance_4.mp4', 'freelance_5.mp4'],
       mediaCount: 9,
