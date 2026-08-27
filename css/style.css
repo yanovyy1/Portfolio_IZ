@@ -201,8 +201,7 @@ button { background: none; border: 0; cursor: pointer; }
 .shape-vid {
   opacity: 0;
   pointer-events: none;
-  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.5));
-  transition: transform 0.5s var(--ease), filter 0.5s var(--ease), opacity 0.4s var(--ease);
+  transition: transform 0.5s var(--ease), opacity 0.4s var(--ease);
 }
 .proj-item:hover .shape-img,
 .proj-item:focus-visible .shape-img {
@@ -212,7 +211,6 @@ button { background: none; border: 0; cursor: pointer; }
 .proj-item:focus-visible .shape-vid {
   opacity: 1;
   transform: scale(1.06) rotate(-1.5deg);
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
 }
 
 /* ---------- Modal ---------- */
