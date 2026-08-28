@@ -405,6 +405,15 @@ button { background: none; border: 0; cursor: pointer; }
   display: block;
   background: #000;
 }
+/* object-fit:cover above is meant for the small cropped thumbnail card only.
+   Native fullscreen keeps that same box-sizing (width/height:100%), which on
+   a landscape display stretches/crops a portrait video across the wide
+   frame instead of letterboxing it - override back to contain so fullscreen
+   always shows the whole vertical frame, bars left/right instead of a crop. */
+.media-slot--video video:fullscreen,
+.media-slot--video video:-webkit-full-screen {
+  object-fit: contain;
+}
 
 /* ---------- Mobile: single scrolling column, one shape at a time ---------- */
 @media (max-width: 720px) {
