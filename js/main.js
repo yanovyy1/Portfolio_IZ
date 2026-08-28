@@ -98,9 +98,14 @@
       cursorDot.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       cursorDot.classList.add('is-active');
     });
-    document.querySelectorAll('a, button').forEach((el) => {
-      el.addEventListener('mouseenter', () => cursorDot.classList.add('is-hover'));
-      el.addEventListener('mouseleave', () => cursorDot.classList.remove('is-hover'));
+    /* Delegated (not bound per-element) because the project list and work
+       track below are generated after this runs - a direct querySelectorAll
+       here would miss every button in them. */
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest('a, button')) cursorDot.classList.add('is-hover');
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest('a, button')) cursorDot.classList.remove('is-hover');
     });
     document.addEventListener('mouseleave', () => cursorDot.classList.remove('is-active'));
   }
@@ -119,68 +124,120 @@
     setInterval(tick, 15000);
   }
 
-  /* ---------- Project list -> center preview (fine pointers only) ----------
-     Hovering/focusing a row in the left-hand project list swaps the shared
-     preview <video>/<img> pair to that project's first real clip and plays
-     it muted+looping; the row stays "active" (bold, meta updated) after the
-     pointer leaves rather than reverting, so the panel always reflects the
-     last-viewed project. Touch devices skip this entirely - each row shows
-     its own static thumbnail instead (see .proj-row-thumb, CSS mobile
-     breakpoint), consistent with how hover-only motion is already handled
-     elsewhere on this site. */
-  const projRows = Array.from(document.querySelectorAll('.proj-row'));
-  const previewFrame = document.getElementById('previewFrame');
-  const previewPoster = document.getElementById('previewPoster');
-  const previewVideo = document.getElementById('previewVideo');
-  const previewRole = document.getElementById('previewRole');
-  const previewMeta = document.getElementById('previewMeta');
+  /* ---------- Build the project list + scroll track ----------
+     ORDER is the single source of truth for display order - reorder
+     projects by editing this array only, nothing else derives order from
+     PROJECTS' own key order. Both the sticky left-hand list and the tall
+     center scroll track are generated from it, one <button>/<section> per
+     project, each carrying its own <video> (lazy-loaded on first activation
+     rather than all five up front). */
+  const ORDER = ['denim', 'glam', 'prequel', 'freelance', 'other'];
+  const projList = document.getElementById('projList');
+  const workTrack = document.getElementById('workTrack');
   const footerCount = document.getElementById('footerCount');
-  const rowKeys = projRows.map((row) => row.dataset.project);
+
+  const posterFor = (file) => `assets/vids/posters/${file.replace(/\.mp4$/, '.jpg')}`;
+
+  ORDER.forEach((key, i) => {
+    const p = PROJECTS[key];
+    const firstMedia = (p.media && p.media[0]) || null;
+
+    const row = document.createElement('button');
+    row.className = 'proj-row';
+    row.dataset.project = key;
+    row.style.setProperty('--d1', String(i + 1));
+    row.innerHTML = `
+      <span class="proj-row-thumb">${firstMedia ? `<img src="${posterFor(firstMedia)}" alt="" loading="lazy">` : ''}</span>
+      <span class="proj-row-text">
+        <span class="proj-row-name">${p.title}</span>
+        <span class="proj-row-meta">${p.role}</span>
+      </span>`;
+    projList.appendChild(row);
+
+    const slide = document.createElement('section');
+    slide.className = 'work-slide';
+    slide.dataset.project = key;
+    slide.innerHTML = `
+      <span class="preview-role">${p.role}</span>
+      <button class="preview-frame-group" data-project="${key}" aria-label="Open ${p.title} case study">
+        <span class="preview-bracket">(</span>
+        <span class="preview-frame">
+          <img class="preview-poster" src="${firstMedia ? posterFor(firstMedia) : ''}" alt="">
+          <video class="preview-video" muted loop playsinline preload="none" data-file="${firstMedia || ''}"></video>
+        </span>
+        <span class="preview-bracket">)</span>
+      </button>
+      <span class="preview-meta">${p.period || p.label}</span>`;
+    workTrack.appendChild(slide);
+  });
+
+  const projRows = Array.from(document.querySelectorAll('.proj-row'));
+  const slides = Array.from(document.querySelectorAll('.work-slide'));
 
   const setActive = (key) => {
-    const p = PROJECTS[key];
-    if (!p) return;
-    const firstMedia = (p.media && p.media[0]) || null;
     projRows.forEach((row) => row.classList.toggle('is-active', row.dataset.project === key));
-    if (previewRole) previewRole.textContent = p.role;
-    if (previewMeta) previewMeta.textContent = p.period || p.label;
     if (footerCount) {
-      const idx = rowKeys.indexOf(key) + 1;
-      footerCount.textContent = `${String(idx).padStart(2, '0')} / ${String(rowKeys.length).padStart(2, '0')}`;
-    }
-    if (firstMedia && previewPoster) {
-      previewPoster.src = `assets/vids/posters/${firstMedia.replace(/\.mp4$/, '.jpg')}`;
-    }
-    if (firstMedia && previewVideo && previewVideo.dataset.src !== firstMedia) {
-      previewVideo.pause();
-      previewFrame.classList.remove('is-playing');
-      previewVideo.dataset.src = firstMedia;
-      previewVideo.src = `assets/vids/${firstMedia}`;
-      previewVideo.load();
+      const idx = ORDER.indexOf(key) + 1;
+      footerCount.textContent = `${String(idx).padStart(2, '0')} / ${String(ORDER.length).padStart(2, '0')}`;
     }
   };
+  setActive(ORDER[0]);
 
-  if (isFinePointer && projRows.length) {
-    const playPreview = (key) => {
-      setActive(key);
-      previewVideo.currentTime = 0;
-      previewVideo.play().then(() => previewFrame.classList.add('is-playing')).catch(() => {});
-    };
-    const stopPreview = () => {
-      previewVideo.pause();
-      previewFrame.classList.remove('is-playing');
-    };
-    projRows.forEach((row) => {
-      const key = row.dataset.project;
-      row.addEventListener('mouseenter', () => playPreview(key));
-      row.addEventListener('mouseleave', stopPreview);
-      row.addEventListener('focus', () => playPreview(key));
-      row.addEventListener('blur', stopPreview);
-    });
-    setActive(rowKeys[0]);
-  } else if (projRows.length) {
-    setActive(rowKeys[0]);
+  /* ---------- Scroll-driven active project (desktop) ----------
+     As a slide crosses the vertical center band of the viewport, it
+     becomes "active": its list row bolds, the footer counter updates, and
+     its video lazy-loads (first activation only) and plays muted+looping.
+     Only the active slide's video plays - the other four stay paused. */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const slide = entry.target;
+          const key = slide.dataset.project;
+          const video = slide.querySelector('.preview-video');
+          const frame = slide.querySelector('.preview-frame');
+          if (entry.isIntersecting) {
+            setActive(key);
+            if (video && video.dataset.file) {
+              if (!video.src) {
+                video.src = `assets/vids/${video.dataset.file}`;
+                video.load();
+              }
+              video.currentTime = 0;
+              video.play().then(() => frame.classList.add('is-playing')).catch(() => {});
+            }
+          } else if (video) {
+            video.pause();
+            frame.classList.remove('is-playing');
+          }
+        });
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    );
+    slides.forEach((slide) => io.observe(slide));
   }
+
+  /* ---------- Clicks: list row -> jump to slide (or open modal on mobile
+     where the track is hidden); preview frame -> open modal ---------- */
+  const isMobileLayout = () => window.matchMedia('(max-width: 720px)').matches;
+  projRows.forEach((row) => {
+    row.addEventListener('click', () => {
+      const key = row.dataset.project;
+      if (isMobileLayout()) {
+        openModalRef(key);
+        return;
+      }
+      const slide = workTrack.querySelector(`[data-project="${key}"]`);
+      if (slide) slide.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+  document.querySelectorAll('.preview-frame-group').forEach((btn) => {
+    btn.addEventListener('click', () => openModalRef(btn.dataset.project));
+  });
+  /* openModal is defined further down (and assigned to this ref right
+     after); this indirection lets the listeners above be wired up right
+     next to the elements they control instead of after the modal block. */
+  let openModalRef;
 
   /* ---------- Project modal ---------- */
   const page = document.querySelector('.page');
@@ -274,6 +331,7 @@
     modalClose.focus();
     updateScrollHint();
   };
+  openModalRef = openModal;
 
   const closeModal = () => {
     overlay.classList.remove('is-open');
@@ -282,9 +340,6 @@
     if (lastFocused) lastFocused.focus();
   };
 
-  projRows.forEach((row) => {
-    row.addEventListener('click', () => openModal(row.dataset.project));
-  });
   modalClose.addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeModal();

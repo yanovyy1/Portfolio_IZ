@@ -8,14 +8,16 @@
   --fg-dim: #85837a;
   --line: #dedbd1;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --page-pad-y: clamp(14px, 2.6vh, 26px);
 }
 
+html {
+  overflow-x: hidden;
+}
 html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
   background: var(--bg);
   color: var(--fg);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -24,7 +26,7 @@ html, body {
   overscroll-behavior-x: none;
 }
 
-h1, h2, h3 { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+h1, h2, h3 { font-family: 'Montserrat', 'Inter', sans-serif; }
 a, button { color: inherit; text-decoration: none; font: inherit; }
 button { background: none; border: 0; cursor: pointer; }
 ::selection { background: var(--fg); color: var(--bg); }
@@ -39,10 +41,15 @@ button { background: none; border: 0; cursor: pointer; }
 .cursor-dot {
   position: fixed;
   top: 0; left: 0;
-  width: 14px; height: 14px;
-  margin: -7px 0 0 -7px;
+  width: 16px; height: 16px;
+  margin: -8px 0 0 -8px;
   border-radius: 50%;
-  background: var(--fg);
+  /* A fixed white fill (not a theme token) is what makes mix-blend-mode:
+     difference actually work as a universal-contrast trick - difference
+     against near-black text was landing near-black-on-black and vanishing
+     when this used to track --fg (near-black on this light theme). White
+     stays visible against any backdrop color except mid-gray. */
+  background: #ffffff;
   mix-blend-mode: difference;
   pointer-events: none;
   z-index: 1000;
@@ -69,12 +76,12 @@ button { background: none; border: 0; cursor: pointer; }
   transform: translateY(0);
 }
 
-/* ---------- Page: desktop locks to the viewport, no scroll ---------- */
+/* ---------- Page ---------- */
 .page {
-  height: 100dvh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: clamp(14px, 2.6vh, 26px) clamp(18px, 3.6vw, 44px);
+  padding: var(--page-pad-y) clamp(18px, 3.6vw, 44px);
   gap: clamp(10px, 2.2vh, 20px);
   position: relative;
   z-index: 1;
@@ -86,7 +93,7 @@ button { background: none; border: 0; cursor: pointer; }
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -106,7 +113,7 @@ button { background: none; border: 0; cursor: pointer; }
   gap: 20px;
 }
 .wordmark {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: clamp(56px, 12vw, 168px);
   line-height: 0.86;
@@ -124,23 +131,36 @@ button { background: none; border: 0; cursor: pointer; }
   margin: 0 0 0.3em;
 }
 
-/* ---------- Work stage: list / preview / info ---------- */
+/* ---------- Work stage: list / scroll track / info ----------
+   The center column (.work-track) is the only one with real height - it's
+   five stacked full-viewport .work-slide sections, one per project, which
+   is what gives the page something to scroll through. The list and info
+   columns are short by comparison, so position:sticky pins each near the
+   top of the viewport for the whole scroll range instead of scrolling out
+   of view after one screen, echoing the reference site's
+   list-stays-put-while-work-scrolls-past feel.
+   Flexbox, not CSS Grid: sticky on a grid item with align-self:start did
+   not hold in Safari here (the item unstuck almost immediately) - this is
+   the well-worn "sticky sidebar" pattern (flex row, align-items:flex-start
+   on the container so children don't stretch to the tall sibling's height,
+   sticky on the two side children) and it's reliable cross-browser where
+   the grid version wasn't. */
 .work-stage {
-  flex: 1;
-  min-height: 0;
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(180px, 260px) 1fr minmax(200px, 300px);
-  align-items: center;
+  display: flex;
+  align-items: flex-start;
   column-gap: clamp(20px, 4vw, 56px);
 }
 
-/* ---- Project list (left) ---- */
+/* ---- Project list (left, sticky) ---- */
 .proj-list {
+  flex: 0 0 clamp(180px, 18vw, 260px);
   display: flex;
   flex-direction: column;
   gap: clamp(10px, 2vh, 20px);
   counter-reset: proj;
+  position: sticky;
+  top: var(--page-pad-y);
 }
 .proj-row {
   display: flex;
@@ -153,7 +173,7 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .proj-row::before {
   content: counter(proj, decimal-leading-zero);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--fg-dim);
@@ -170,7 +190,7 @@ button { background: none; border: 0; cursor: pointer; }
   min-width: 0;
 }
 .proj-row-name {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 500;
   font-size: clamp(17px, 2.3vw, 23px);
   letter-spacing: -0.01em;
@@ -195,17 +215,23 @@ button { background: none; border: 0; cursor: pointer; }
   border-radius: 4px;
 }
 
-/* ---- Preview stage (center) ---- */
-.preview-stage {
+/* ---- Work track (center, scrollable) ---- */
+.work-track {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.work-slide {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: clamp(10px, 2vw, 22px);
-  height: 100%;
+  min-height: 100dvh;
 }
 .preview-role,
 .preview-meta {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -221,7 +247,7 @@ button { background: none; border: 0; cursor: pointer; }
   min-width: 0;
 }
 .preview-bracket {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: clamp(64px, 13vh, 140px);
   line-height: 1;
@@ -252,12 +278,14 @@ button { background: none; border: 0; cursor: pointer; }
 .preview-frame.is-playing .preview-video { opacity: 1; }
 .preview-frame.is-playing .preview-poster { opacity: 0; }
 
-/* ---- Work info (right) ---- */
+/* ---- Work info (right, sticky) ---- */
 .work-info {
+  flex: 0 0 clamp(200px, 20vw, 300px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: clamp(16px, 3vh, 28px);
+  position: sticky;
+  top: var(--page-pad-y);
 }
 .work-blurb {
   font-size: 14px;
@@ -273,7 +301,7 @@ button { background: none; border: 0; cursor: pointer; }
   font-size: 13px;
 }
 .work-contact-label {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -292,7 +320,7 @@ button { background: none; border: 0; cursor: pointer; }
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -369,7 +397,7 @@ button { background: none; border: 0; cursor: pointer; }
 
 .modal-label {
   display: block;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 500;
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -501,10 +529,17 @@ button { background: none; border: 0; cursor: pointer; }
     display: block;
   }
 
-  /* Hover-driven center preview only makes sense with a mouse; on touch
-     each row carries its own static thumbnail instead (see .proj-row-thumb
-     below), so the shared preview rig is hidden entirely. */
-  .preview-stage { display: none; }
+  /* The sticky-list / scroll-track split is a desktop-only trick (it needs
+     real vertical scroll distance and a mouse to make hover/scroll-driven
+     preview switching legible). On touch each row carries its own static
+     thumbnail instead (see .proj-row-thumb below) and taps go straight to
+     the modal, so both the scroll track and the list/info stickiness are
+     switched off in favor of one plain stacked column. */
+  .work-track { display: none; }
+  .proj-list,
+  .work-info {
+    position: static;
+  }
 
   .proj-list { gap: 18px; }
   .proj-row {
