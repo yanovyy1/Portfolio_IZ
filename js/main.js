@@ -105,72 +105,81 @@
     document.addEventListener('mouseleave', () => cursorDot.classList.remove('is-active'));
   }
 
-  /* ---------- Hover-to-play shape animations (fine pointers only) ----------
-     Touch devices only ever show the static PNG - no video, no canvas
-     drawing. Tried playing the animation on scroll-into-view on mobile
-     first, but it read as distracting/glitchy there, so it's off entirely
-     rather than gated by a heuristic.
+  /* ---------- Live local-time clock (top nav) ---------- */
+  const clockEl = document.getElementById('clock');
+  if (clockEl) {
+    const tzAbbr = new Intl.DateTimeFormat('en-US', { timeZoneName: 'short' })
+      .formatToParts(new Date())
+      .find((p) => p.type === 'timeZoneName')?.value || '';
+    const tick = () => {
+      const time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      clockEl.textContent = tzAbbr ? `${tzAbbr} ${time}` : time;
+    };
+    tick();
+    setInterval(tick, 15000);
+  }
 
-     Each source video packs two stacked frames per shape: plain RGB
-     color on top, a grayscale alpha mask on the bottom (baked in with
-     ffmpeg, since no single video codec reliably decodes real alpha
-     everywhere). On every video frame we redraw both halves onto a
-     canvas and copy the mask's luminance into the color frame's alpha
-     channel, giving true per-pixel transparency independent of the
-     page background. */
-  if (isFinePointer) {
-    document.querySelectorAll('.proj-item').forEach((card) => {
-      const canvas = card.querySelector('.shape-vid');
-      const video = card.querySelector('.shape-src');
-      if (!canvas || !video) return;
-      const ctx = canvas.getContext('2d');
-      const w = canvas.width;
-      const h = canvas.height;
-      let scheduled = null;
+  /* ---------- Project list -> center preview (fine pointers only) ----------
+     Hovering/focusing a row in the left-hand project list swaps the shared
+     preview <video>/<img> pair to that project's first real clip and plays
+     it muted+looping; the row stays "active" (bold, meta updated) after the
+     pointer leaves rather than reverting, so the panel always reflects the
+     last-viewed project. Touch devices skip this entirely - each row shows
+     its own static thumbnail instead (see .proj-row-thumb, CSS mobile
+     breakpoint), consistent with how hover-only motion is already handled
+     elsewhere on this site. */
+  const projRows = Array.from(document.querySelectorAll('.proj-row'));
+  const previewFrame = document.getElementById('previewFrame');
+  const previewPoster = document.getElementById('previewPoster');
+  const previewVideo = document.getElementById('previewVideo');
+  const previewRole = document.getElementById('previewRole');
+  const previewMeta = document.getElementById('previewMeta');
+  const footerCount = document.getElementById('footerCount');
+  const rowKeys = projRows.map((row) => row.dataset.project);
 
-      const scheduleNext = () => {
-        if (video.requestVideoFrameCallback) {
-          scheduled = video.requestVideoFrameCallback(drawFrame);
-        } else {
-          scheduled = requestAnimationFrame(drawFrame);
-        }
-      };
+  const setActive = (key) => {
+    const p = PROJECTS[key];
+    if (!p) return;
+    const firstMedia = (p.media && p.media[0]) || null;
+    projRows.forEach((row) => row.classList.toggle('is-active', row.dataset.project === key));
+    if (previewRole) previewRole.textContent = p.role;
+    if (previewMeta) previewMeta.textContent = p.period || p.label;
+    if (footerCount) {
+      const idx = rowKeys.indexOf(key) + 1;
+      footerCount.textContent = `${String(idx).padStart(2, '0')} / ${String(rowKeys.length).padStart(2, '0')}`;
+    }
+    if (firstMedia && previewPoster) {
+      previewPoster.src = `assets/vids/posters/${firstMedia.replace(/\.mp4$/, '.jpg')}`;
+    }
+    if (firstMedia && previewVideo && previewVideo.dataset.src !== firstMedia) {
+      previewVideo.pause();
+      previewFrame.classList.remove('is-playing');
+      previewVideo.dataset.src = firstMedia;
+      previewVideo.src = `assets/vids/${firstMedia}`;
+      previewVideo.load();
+    }
+  };
 
-      function drawFrame() {
-        if (video.paused || video.ended) return;
-        ctx.drawImage(video, 0, 0, w, h, 0, 0, w, h);
-        const frame = ctx.getImageData(0, 0, w, h);
-        ctx.drawImage(video, 0, h, w, h, 0, 0, w, h);
-        const mask = ctx.getImageData(0, 0, w, h).data;
-        const data = frame.data;
-        for (let i = 0; i < data.length; i += 4) {
-          data[i + 3] = mask[i];
-        }
-        ctx.putImageData(frame, 0, 0);
-        scheduleNext();
-      }
-
-      const play = () => {
-        card.classList.add('is-playing');
-        video.currentTime = 0;
-        video.play().then(scheduleNext).catch(() => {});
-      };
-      const stop = () => {
-        card.classList.remove('is-playing');
-        video.pause();
-        video.currentTime = 0;
-        if (scheduled) {
-          if (video.cancelVideoFrameCallback) video.cancelVideoFrameCallback(scheduled);
-          else cancelAnimationFrame(scheduled);
-          scheduled = null;
-        }
-        ctx.clearRect(0, 0, w, h);
-      };
-      card.addEventListener('mouseenter', play);
-      card.addEventListener('mouseleave', stop);
-      card.addEventListener('focus', play);
-      card.addEventListener('blur', stop);
+  if (isFinePointer && projRows.length) {
+    const playPreview = (key) => {
+      setActive(key);
+      previewVideo.currentTime = 0;
+      previewVideo.play().then(() => previewFrame.classList.add('is-playing')).catch(() => {});
+    };
+    const stopPreview = () => {
+      previewVideo.pause();
+      previewFrame.classList.remove('is-playing');
+    };
+    projRows.forEach((row) => {
+      const key = row.dataset.project;
+      row.addEventListener('mouseenter', () => playPreview(key));
+      row.addEventListener('mouseleave', stopPreview);
+      row.addEventListener('focus', () => playPreview(key));
+      row.addEventListener('blur', stopPreview);
     });
+    setActive(rowKeys[0]);
+  } else if (projRows.length) {
+    setActive(rowKeys[0]);
   }
 
   /* ---------- Project modal ---------- */
@@ -273,8 +282,8 @@
     if (lastFocused) lastFocused.focus();
   };
 
-  document.querySelectorAll('.proj-item').forEach((card) => {
-    card.addEventListener('click', () => openModal(card.dataset.project));
+  projRows.forEach((row) => {
+    row.addEventListener('click', () => openModal(row.dataset.project));
   });
   modalClose.addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => {

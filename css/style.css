@@ -2,11 +2,11 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --bg: #0a0a0a;
-  --bg-soft: #131311;
-  --fg: #f5f5f3;
-  --fg-dim: #8a8a86;
-  --line: #262624;
+  --bg: #f7f6f2;
+  --bg-soft: #eeece4;
+  --fg: #0a0a0a;
+  --fg-dim: #85837a;
+  --line: #dedbd1;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -33,17 +33,6 @@ button { background: none; border: 0; cursor: pointer; }
 .has-custom-cursor a,
 .has-custom-cursor button {
   cursor: none;
-}
-
-/* ---------- Grain overlay ---------- */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-  pointer-events: none;
-  opacity: 0.045;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ---------- Custom cursor ---------- */
@@ -80,155 +69,235 @@ button { background: none; border: 0; cursor: pointer; }
   transform: translateY(0);
 }
 
-/* ---------- Page: desktop locks to the viewport so every shape is visible on load ---------- */
+/* ---------- Page: desktop locks to the viewport, no scroll ---------- */
 .page {
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: clamp(14px, 2.8vh, 30px) clamp(16px, 3.6vw, 40px);
-  gap: clamp(8px, 1.6vh, 16px);
+  padding: clamp(14px, 2.6vh, 26px) clamp(18px, 3.6vw, 44px);
+  gap: clamp(10px, 2.2vh, 20px);
   position: relative;
   z-index: 1;
 }
 
-/* ---------- Top head: title + contacts ---------- */
-.top-head {
+/* ---------- Top nav: thin utility row ---------- */
+.top-nav {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: clamp(6px, 1vh, 10px);
+  justify-content: space-between;
   flex-shrink: 0;
-  text-align: center;
-}
-
-.title-line {
-  font-family: 'Caveat', cursive;
-  font-weight: 700;
-  font-size: clamp(24px, 4vh, 38px);
-  letter-spacing: 0.01em;
-  color: var(--fg);
-  margin: 0;
-}
-
-.contact-icons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: clamp(24px, 3.6vh, 32px);
-  padding: 0 16px;
-  border: 1px solid var(--fg-dim);
-  border-radius: 100px;
-  background: rgba(245, 245, 243, 0.05);
   font-family: 'Space Grotesk', sans-serif;
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fg);
-  transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+  color: var(--fg-dim);
 }
-.icon-btn:hover {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
+.top-nav-item { display: flex; align-items: center; gap: 14px; }
+.top-nav-contact a { color: var(--fg-dim); transition: color 0.3s var(--ease); }
+.top-nav-contact a:hover { color: var(--fg); }
+.top-nav-clock { font-variant-numeric: tabular-nums; }
+
+/* ---------- Brand row: huge wordmark + tagline ---------- */
+.brand-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 20px;
+}
+.wordmark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(56px, 12vw, 168px);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--fg);
+}
+.tagline {
+  font-size: clamp(11px, 1.4vh, 14px);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  text-align: right;
+  margin: 0 0 0.3em;
 }
 
-/* ---------- Stage: asymmetric project collage ---------- */
-.stage {
+/* ---------- Work stage: list / preview / info ---------- */
+.work-stage {
   flex: 1;
   min-height: 0;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 1fr 1fr;
-  column-gap: clamp(6px, 1.6vw, 22px);
-  row-gap: clamp(2px, 0.8vh, 8px);
+  grid-template-columns: minmax(180px, 260px) 1fr minmax(200px, 300px);
+  align-items: center;
+  column-gap: clamp(20px, 4vw, 56px);
 }
 
-.pi-freelance { grid-column: 1; grid-row: 1 / 3; }
-.pi-prequel { grid-column: 2; grid-row: 1; }
-.pi-other { grid-column: 3; grid-row: 1; }
-.pi-glam { grid-column: 2; grid-row: 2; }
-.pi-denim { grid-column: 3; grid-row: 2; }
-
-.proj-item {
+/* ---- Project list (left) ---- */
+.proj-list {
   display: flex;
   flex-direction: column;
+  gap: clamp(10px, 2vh, 20px);
+  counter-reset: proj;
+}
+.proj-row {
+  display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: clamp(6px, 1vh, 10px);
-  height: 100%;
-  width: 100%;
-  min-height: 0;
+  gap: 12px;
+  text-align: left;
+  counter-increment: proj;
+  color: var(--fg-dim);
+  transition: color 0.3s var(--ease);
+}
+.proj-row::before {
+  content: counter(proj, decimal-leading-zero);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--fg-dim);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.proj-row-thumb {
+  display: none;
+}
+.proj-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
-  padding-top: clamp(2px, 0.6vh, 6px);
 }
-.proj-item:focus-visible {
-  outline: 2px solid var(--fg);
-  outline-offset: 8px;
-  border-radius: 12px;
+.proj-row-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: clamp(17px, 2.3vw, 23px);
+  letter-spacing: -0.01em;
 }
-
-.proj-name {
-  font-family: 'Caveat', cursive;
-  font-weight: 700;
-  font-size: clamp(19px, 3.1vh, 29px);
-  letter-spacing: 0.01em;
+.proj-row-meta {
+  display: none;
+}
+.proj-row:hover,
+.proj-row:focus-visible,
+.proj-row.is-active {
   color: var(--fg);
 }
-
-.shape-wrap {
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  position: relative;
+.proj-row:hover::before,
+.proj-row:focus-visible::before,
+.proj-row.is-active::before {
+  opacity: 1;
+}
+.proj-row.is-active .proj-row-name { font-weight: 700; }
+.proj-row:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 6px;
+  border-radius: 4px;
 }
 
-.shape-img,
-.shape-vid {
+/* ---- Preview stage (center) ---- */
+.preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 22px);
+  height: 100%;
+}
+.preview-role,
+.preview-meta {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.preview-frame-group {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 10px);
+  min-width: 0;
+}
+.preview-bracket {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(64px, 13vh, 140px);
+  line-height: 1;
+  color: var(--fg);
+  user-select: none;
+}
+.preview-frame {
+  position: relative;
+  width: clamp(150px, 16vw, 240px);
+  aspect-ratio: 9 / 16;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-soft);
+  flex-shrink: 0;
+}
+.preview-poster,
+.preview-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: 50% 0%;
+  object-fit: cover;
 }
-
-.shape-img {
-  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.5));
-  transition: transform 0.5s var(--ease), filter 0.5s var(--ease), opacity 0.4s var(--ease);
-}
-/* Each shape's hover video is packed with margin around the actual
-   silhouette (so the loop's widest phase never clips) - the static PNG has
-   no such margin, so at equal box size the video content reads visibly
-   smaller. --vid-scale (measured per shape from the packed video's alpha
-   bbox at its loop start frame vs the static PNG's full-bleed crop)
-   compensates so switching PNG->video doesn't shrink the shape. It's a
-   constant, not part of the hover transition, so nothing resizes on hover -
-   only opacity crossfades. */
-.shape-vid {
+.preview-video {
   opacity: 0;
-  pointer-events: none;
-  transform: scale(var(--vid-scale, 1)) rotate(-1.5deg);
   transition: opacity 0.4s var(--ease);
 }
-.pi-freelance .shape-vid { --vid-scale: 1.13; }
-.pi-prequel .shape-vid { --vid-scale: 1.18; }
-.pi-other .shape-vid { --vid-scale: 1.18; }
-.pi-glam .shape-vid { --vid-scale: 1.23; }
-.pi-denim .shape-vid { --vid-scale: 1.12; }
+.preview-frame.is-playing .preview-video { opacity: 1; }
+.preview-frame.is-playing .preview-poster { opacity: 0; }
 
-/* Playback state is driven by JS (.is-playing), not CSS :hover - on touch
-   devices tapping a button can leave a "sticky" :hover applied until the
-   next tap elsewhere, which desynced from the JS video (paused, blank
-   canvas) and looked like a frozen black shape while scrolling away. */
-.proj-item.is-playing .shape-img,
-.proj-item:focus-visible .shape-img {
-  opacity: 0;
+/* ---- Work info (right) ---- */
+.work-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(16px, 3vh, 28px);
 }
-.proj-item.is-playing .shape-vid,
-.proj-item:focus-visible .shape-vid {
-  opacity: 1;
+.work-blurb {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-dim);
+  max-width: 30ch;
+  margin: 0;
+}
+.work-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+.work-contact-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: 4px;
+}
+.work-contact a {
+  color: var(--fg);
+  transition: opacity 0.3s var(--ease);
+}
+.work-contact a:hover { opacity: 0.6; }
+
+/* ---------- Bottom bar ---------- */
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Modal ---------- */
@@ -240,7 +309,7 @@ button { background: none; border: 0; cursor: pointer; }
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(5, 5, 5, 0.88);
+  background: rgba(10, 10, 8, 0.5);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s var(--ease);
@@ -255,7 +324,7 @@ button { background: none; border: 0; cursor: pointer; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg-soft);
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 22px;
   transform: scale(0.96) translateY(10px);
@@ -277,7 +346,7 @@ button { background: none; border: 0; cursor: pointer; }
   bottom: 0;
   height: 56px;
   border-radius: 0 0 22px 22px;
-  background: linear-gradient(to bottom, rgba(19, 19, 17, 0), var(--bg-soft) 75%);
+  background: linear-gradient(to bottom, rgba(247, 246, 242, 0), var(--bg) 75%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -300,16 +369,18 @@ button { background: none; border: 0; cursor: pointer; }
 
 .modal-label {
   display: block;
-  font-family: 'Caveat', cursive;
-  font-weight: 700;
-  font-size: 26px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--fg-dim);
-  margin: 0 0 6px;
+  margin: 0 0 10px;
 }
 .modal-title {
   font-size: clamp(26px, 5vw, 40px);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   margin: 0 0 14px;
 }
 .modal-meta {
@@ -391,7 +462,7 @@ button { background: none; border: 0; cursor: pointer; }
   padding: 0;
   overflow: hidden;
   border-style: solid;
-  border-color: var(--fg-dim);
+  border-color: var(--line);
 }
 .media-slot--video:hover {
   border-color: var(--fg);
@@ -415,68 +486,60 @@ button { background: none; border: 0; cursor: pointer; }
   object-fit: contain;
 }
 
-/* ---------- Mobile: single scrolling column, one shape at a time ---------- */
+/* ---------- Mobile: single scrolling column ---------- */
 @media (max-width: 720px) {
-  .page { height: auto; min-height: 100dvh; padding: 16px 16px; gap: 14px; }
+  .page { height: auto; min-height: 100dvh; padding: 16px 16px; gap: 22px; }
 
-  .title-line { font-size: clamp(22px, 3.6vh, 30px); }
+  .top-nav { flex-wrap: wrap; gap: 8px; }
+  .top-nav-contact { gap: 12px; }
 
-  .stage {
-    display: flex;
-    flex-direction: column;
-    gap: 36px;
-    min-height: 0;
+  .brand-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .wordmark { font-size: clamp(48px, 16vw, 88px); }
+  .tagline { text-align: left; margin: 0; }
+
+  .work-stage {
+    display: block;
   }
 
-  .proj-item {
-    height: auto;
+  /* Hover-driven center preview only makes sense with a mouse; on touch
+     each row carries its own static thumbnail instead (see .proj-row-thumb
+     below), so the shared preview rig is hidden entirely. */
+  .preview-stage { display: none; }
+
+  .proj-list { gap: 18px; }
+  .proj-row {
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .proj-row::before { align-self: flex-start; padding-top: 4px; }
+  .proj-row-thumb {
+    display: block;
+    flex-shrink: 0;
+    width: 56px;
+    aspect-ratio: 9 / 16;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg-soft);
+  }
+  .proj-row-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .proj-row-name { font-size: 19px; }
+  .proj-row-meta {
+    display: block;
+    font-size: 12px;
+    color: var(--fg-dim);
   }
 
-  .shape-wrap {
-    flex: none;
-  }
-  /* shape-img/shape-vid are absolutely positioned (no intrinsic height of
-     their own), so on mobile (where .proj-item height is content-driven,
-     not a fixed grid row) .shape-wrap needs an explicit aspect-ratio per
-     shape or it collapses to 0 height. */
-  .pi-freelance .shape-wrap { aspect-ratio: 776 / 1306; }
-  .pi-glam .shape-wrap { aspect-ratio: 1038 / 765; }
-  .pi-prequel .shape-wrap { aspect-ratio: 1154 / 952; }
-  .pi-other .shape-wrap { aspect-ratio: 1378 / 573; }
-  .pi-denim .shape-wrap { aspect-ratio: 1024 / 716; }
+  .work-info { margin-top: 8px; }
+  .work-blurb { max-width: none; }
 
-  /* Desktop hover-size compensation assumes the desktop grid's box
-     proportions; mobile's per-shape aspect-ratio boxes above are different,
-     so reset to unscaled here rather than carry over an unverified value. */
-  .pi-freelance .shape-vid,
-  .pi-prequel .shape-vid,
-  .pi-other .shape-vid,
-  .pi-glam .shape-vid,
-  .pi-denim .shape-vid {
-    --vid-scale: 1;
-  }
-
-  .pi-denim { order: 1; }
-  .pi-glam { order: 2; }
-  .pi-prequel { order: 3; }
-  .pi-freelance { order: 4; }
-  .pi-other { order: 5; }
-
-  .proj-name { font-size: clamp(17px, 2.8vh, 22px); }
+  .bottom-bar { flex-direction: column; align-items: flex-start; gap: 4px; }
 
   .modal-media { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 720px) and (orientation: landscape) {
-  .stage {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 1fr 1fr;
-  }
-  .proj-item { min-height: 0; }
-  .pi-freelance { grid-column: 1; grid-row: 1 / 3; }
-  .pi-prequel { grid-column: 2; grid-row: 1; }
-  .pi-other { grid-column: 3; grid-row: 1; }
-  .pi-glam { grid-column: 2; grid-row: 2; }
-  .pi-denim { grid-column: 3; grid-row: 2; }
 }
