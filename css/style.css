@@ -46,7 +46,7 @@ html, body {
 }
 
 h1, h2, h3 { font-family: 'Montserrat', 'Inter', sans-serif; }
-a, button { color: inherit; text-decoration: none; font: inherit; }
+a, button { color: inherit; text-decoration: none; font: inherit; touch-action: manipulation; }
 button { background: none; border: 0; cursor: pointer; }
 ::selection { background: var(--fg); color: var(--bg); }
 
@@ -643,6 +643,14 @@ button { background: none; border: 0; cursor: pointer; }
 
   .top-nav { flex-wrap: wrap; gap: 8px; }
   .top-nav-contact { gap: 12px; }
+  .top-nav-clock { display: none; }
+  /* The theme toggle used to sit here as plain text ("Selected Work"), so
+     an 11px label with no padding was never a problem. As a tap target on
+     a real phone that's both too small (well under the ~44px minimum) and
+     flush against the left screen edge, where iOS's own back-swipe
+     gesture competes for the touch - padding (not just a bigger font)
+     pads out the actual hit area without changing how it looks. */
+  .theme-toggle { padding: 15px 12px 15px 0; margin: -15px 0; }
 
   .brand-row { flex-direction: column; align-items: flex-start; gap: 8px; }
   .wordmark { font-size: clamp(34px, 13cqw, 62px); }
