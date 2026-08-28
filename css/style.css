@@ -154,11 +154,22 @@ button { background: none; border: 0; cursor: pointer; }
   /* Sized for a two-line "Ivan / Zosimov" lockup (longest line: 7 letters) -
      scaled down from the old single-word "Novyy" clamp so the wider line
      can't overflow .page's width; see the vw->cqw note above for why cqw.
-     .proj-list/.work-info are position:fixed and centered on the viewport
-     independently of this header's height (see below) - so, unlike the
-     sticky approach this replaced, the wordmark is free to be as large as
-     the brand wants without dragging the columns' centering off. */
-  font-size: clamp(48px, 9cqw, 125px);
+     .proj-list/.work-info are position:fixed, pinned to dead-center of the
+     viewport at every scroll position including the very first frame - so
+     the header has to be physically incapable of growing tall enough to
+     reach that center point, on any real viewport, or the two overlap.
+     min(9cqw, 13vh) is the fix: 9cqw caps it against the container's
+     WIDTH same as before, 13vh caps it against the viewport's HEIGHT -
+     whichever is smaller wins, so on a short/squat window the wordmark
+     shrinks on its own well before it could ever reach the centered
+     columns, with no measuring, no fixed offset, nothing that can drift
+     out of sync with a later layout change. Floor case: below roughly
+     500-550px of real viewport height the 5-row list alone is taller
+     than the wordmark can be shrunk to clear (a fixed-size row count
+     doesn't scale down the way font-size does) - a genuinely short
+     window (e.g. a phone rotated to landscape, wide enough to stay past
+     the 720px mobile breakpoint) can still see slight overlap there. */
+  font-size: clamp(40px, min(9cqw, 13vh), 125px);
   line-height: 0.9;
   letter-spacing: -0.03em;
   margin: 0;
@@ -184,42 +195,36 @@ button { background: none; border: 0; cursor: pointer; }
    top of the viewport for the whole scroll range instead of scrolling out
    of view after one screen, echoing the reference site's
    list-stays-put-while-work-scrolls-past feel.
-   Flexbox, not CSS Grid: sticky on a grid item with align-self:start did
-   not hold in Safari here (the item unstuck almost immediately) - this is
-   the well-worn "sticky sidebar" pattern (flex row, align-items:flex-start
-   on the container so children don't stretch to the tall sibling's height,
-   sticky on the two side children) and it's reliable cross-browser where
-   the grid version wasn't. */
+   .proj-list/.work-info are position:fixed, pinned to the exact vertical
+   center of the viewport at every scroll position - including the very
+   first frame, before any scrolling - which sticky positioning cannot do
+   (it only pins once scrolling has pushed the element's normal-flow
+   position past the offset; before that it's just wherever the header
+   put it). Overlapping the wordmark above was the obvious risk with an
+   always-centered fixed column - handled at the source by capping the
+   wordmark's own size against viewport height (see .wordmark's min(cqw,
+   vh) above), not by adjusting the columns' position, so there's nothing
+   here that can drift out of sync with the header later.
+   Taken out of the flex row entirely (fixed elements don't participate
+   in flex layout), so .work-track reserves their horizontal space itself
+   with padding, below. */
 .work-stage {
   min-width: 0;
   display: flex;
   align-items: flex-start;
-  column-gap: clamp(20px, 4cqw, 56px);
 }
 
-/* ---- Project list (left, sticky) ---- */
+/* ---- Project list (left, always centered on the viewport) ---- */
 .proj-list {
-  flex: 0 0 clamp(180px, 20cqw, 260px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: clamp(10px, 2vh, 20px);
   counter-reset: proj;
-  /* Centered, not top-pinned - matches the reference site's list staying
-     put in the middle of the screen instead of creeping up under the top
-     nav as you scroll. A fixed + measured-header-height approach was
-     tried and reverted: it centers in the space left over below the
-     header, which is a CONSTANT offset (half the header's height) short
-     of true center forever, at any scroll position - worse than this
-     sticky version for the 95% of the time someone is actually scrolled
-     into the project list, even though it wins at the literal first
-     frame. `height: 100dvh` + `justify-content: center` centers on the
-     full viewport with zero permanent offset once stuck (any scroll past
-     the header), and can't overlap the header before that because the
-     box itself can never render earlier/higher than its normal-flow
-     start. */
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: clamp(18px, 3.6vw, 44px);
+  width: clamp(180px, 20cqw, 260px);
   height: 100dvh;
 }
 .proj-row {
@@ -283,6 +288,13 @@ button { background: none; border: 0; cursor: pointer; }
   flex-direction: column;
   gap: clamp(28px, 5vh, 56px);
   padding: clamp(20px, 6vh, 80px) 0;
+  /* .proj-list/.work-info are position:fixed (removed from this flex row
+     entirely) so this padding is what actually reserves their columns'
+     width + the gap that used to come from .work-stage's column-gap -
+     without it the track would render full-bleed under the fixed
+     columns instead of staying centered between them. */
+  padding-left: calc(clamp(180px, 20cqw, 260px) + clamp(20px, 4cqw, 56px));
+  padding-right: calc(clamp(200px, 22cqw, 300px) + clamp(20px, 4cqw, 56px));
 }
 .work-slide {
   display: flex;
@@ -394,14 +406,15 @@ button { background: none; border: 0; cursor: pointer; }
 
 /* ---- Work info (right, sticky) ---- */
 .work-info {
-  flex: 0 0 clamp(200px, 22cqw, 300px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: clamp(16px, 3vh, 28px);
-  /* Centered, same technique and reasoning as .proj-list above. */
-  position: sticky;
+  /* Fixed, same technique and reasoning as .proj-list above. */
+  position: fixed;
   top: 0;
+  right: clamp(18px, 3.6vw, 44px);
+  width: clamp(200px, 22cqw, 300px);
   height: 100dvh;
 }
 /* Ties the otherwise-static right column to the scroll-driven active
@@ -690,11 +703,16 @@ button { background: none; border: 0; cursor: pointer; }
   .work-track { display: none; }
   .proj-list,
   .work-info {
+    /* Desktop pins both columns to the viewport with position:fixed plus
+       an explicit width - on the stacked mobile layout that would freeze
+       a ~200px-wide column floating over the page instead of a normal
+       full-width block in the flow. Both need to fully reset back to
+       ordinary static sizing. */
     position: static;
-    /* Desktop centers both columns with a fixed 100dvh sticky box - on the
-       stacked mobile layout that would just be a viewport-tall blank
-       spacer with the actual rows centered inside it, pushing everything
-       else down. Both need to size to their own content again. */
+    top: auto;
+    left: auto;
+    right: auto;
+    width: auto;
     height: auto;
     justify-content: flex-start;
   }
