@@ -107,10 +107,10 @@ button { background: none; border: 0; cursor: pointer; }
 /* ---------- Brand row: huge wordmark + tagline ---------- */
 .brand-row {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
   flex-shrink: 0;
-  gap: 20px;
+  gap: clamp(12px, 2.4vh, 26px);
 }
 .wordmark {
   font-family: 'Montserrat', sans-serif;
@@ -122,13 +122,15 @@ button { background: none; border: 0; cursor: pointer; }
   color: var(--fg);
 }
 .tagline {
-  font-size: clamp(11px, 1.4vh, 14px);
-  line-height: 1.5;
-  letter-spacing: 0.04em;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(15px, 2vw, 21px);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: var(--fg-dim);
-  text-align: right;
-  margin: 0 0 0.3em;
+  color: var(--fg);
+  text-align: left;
+  margin: 0;
 }
 
 /* ---------- Work stage: list / scroll track / info ----------
@@ -221,13 +223,14 @@ button { background: none; border: 0; cursor: pointer; }
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: clamp(28px, 5vh, 56px);
+  padding: clamp(20px, 6vh, 80px) 0;
 }
 .work-slide {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: clamp(10px, 2vw, 22px);
-  min-height: 100dvh;
 }
 .preview-role,
 .preview-meta {
@@ -242,26 +245,24 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .preview-frame-group {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: clamp(4px, 1vw, 10px);
+  gap: 12px;
   min-width: 0;
-}
-.preview-bracket {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: clamp(64px, 13vh, 140px);
-  line-height: 1;
-  color: var(--fg);
-  user-select: none;
 }
 .preview-frame {
   position: relative;
-  width: clamp(150px, 16vw, 240px);
+  width: clamp(160px, 17vw, 260px);
   aspect-ratio: 9 / 16;
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--bg-soft);
   flex-shrink: 0;
+  transition: transform 0.4s var(--ease);
+}
+.preview-frame-group:hover .preview-frame,
+.preview-frame-group:focus-visible .preview-frame {
+  transform: scale(1.02);
 }
 .preview-poster,
 .preview-video {
@@ -277,6 +278,61 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .preview-frame.is-playing .preview-video { opacity: 1; }
 .preview-frame.is-playing .preview-poster { opacity: 0; }
+
+/* A dark scrim + "view project" label makes the frame's clickability
+   obvious without needing to already be hovering it - the scrim fades in
+   from 0 (not just brightening) so it never dulls the poster/video at
+   rest. */
+.preview-frame-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to top, rgba(10, 10, 8, 0.55), rgba(10, 10, 8, 0) 55%);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+.preview-frame-group:hover .preview-frame-overlay,
+.preview-frame-group:focus-visible .preview-frame-overlay {
+  opacity: 1;
+}
+.preview-frame-overlay-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  transform: translateY(6px);
+  transition: transform 0.3s var(--ease);
+}
+.preview-frame-group:hover .preview-frame-overlay-label,
+.preview-frame-group:focus-visible .preview-frame-overlay-label {
+  transform: translateY(0);
+}
+/* Visible at rest too (dim), not only on hover - the frame alone didn't
+   read as clickable until you'd already found it by accident. */
+.preview-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  transition: color 0.3s var(--ease), gap 0.3s var(--ease);
+}
+.preview-frame-group:hover .preview-cta,
+.preview-frame-group:focus-visible .preview-cta {
+  color: var(--fg);
+  gap: 10px;
+}
 
 /* ---- Work info (right, sticky) ---- */
 .work-info {

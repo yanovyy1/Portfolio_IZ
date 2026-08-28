@@ -160,12 +160,14 @@
     slide.innerHTML = `
       <span class="preview-role">${p.role}</span>
       <button class="preview-frame-group" data-project="${key}" aria-label="Open ${p.title} case study">
-        <span class="preview-bracket">(</span>
         <span class="preview-frame">
           <img class="preview-poster" src="${firstMedia ? posterFor(firstMedia) : ''}" alt="">
           <video class="preview-video" muted loop playsinline preload="none" data-file="${firstMedia || ''}"></video>
+          <span class="preview-frame-overlay">
+            <span class="preview-frame-overlay-label">View project</span>
+          </span>
         </span>
-        <span class="preview-bracket">)</span>
+        <span class="preview-cta">View case study →</span>
       </button>
       <span class="preview-meta">${p.period || p.label}</span>`;
     workTrack.appendChild(slide);
