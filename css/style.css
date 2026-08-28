@@ -271,8 +271,7 @@ button { background: none; border: 0; cursor: pointer; }
   justify-content: center;
   gap: clamp(10px, 2.2cqw, 22px);
 }
-.preview-role,
-.preview-meta {
+.preview-role {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
   font-size: 12px;

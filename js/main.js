@@ -10,7 +10,7 @@
         'Typography, icon, illustration & UI animation',
         'Performance creatives for Tier-1 markets (US, Europe, Asia) — Instagram, TikTok, Facebook, Google',
       ],
-      media: ['freelance_1.mp4', 'freelance_4.mp4', 'freelance_5.mp4'],
+      media: ['freelance_5.mp4', 'freelance_4.mp4'],
       mediaCount: 9,
       mediaColumns: 3,
     },
@@ -198,8 +198,7 @@
           </span>
         </span>
         <span class="preview-cta">View case study →</span>
-      </button>
-      <span class="preview-meta">${p.period || p.label}</span>`;
+      </button>`;
     workTrack.appendChild(slide);
   });
 
