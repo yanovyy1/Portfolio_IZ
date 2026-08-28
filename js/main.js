@@ -147,7 +147,10 @@
     row.dataset.project = key;
     row.style.setProperty('--d1', String(i + 1));
     row.innerHTML = `
-      <span class="proj-row-thumb">${firstMedia ? `<img src="${posterFor(firstMedia)}" alt="" loading="lazy">` : ''}</span>
+      <span class="proj-row-thumb">${firstMedia ? `
+        <img class="proj-row-poster" src="${posterFor(firstMedia)}" alt="" loading="lazy">
+        <video class="proj-row-video" muted loop playsinline preload="none" data-file="${firstMedia}"></video>
+      ` : ''}</span>
       <span class="proj-row-text">
         <span class="proj-row-name">${p.title}</span>
         <span class="proj-row-meta">${p.role}</span>
@@ -176,12 +179,14 @@
   const projRows = Array.from(document.querySelectorAll('.proj-row'));
   const slides = Array.from(document.querySelectorAll('.work-slide'));
 
+  const workActiveTitle = document.getElementById('workActiveTitle');
   const setActive = (key) => {
     projRows.forEach((row) => row.classList.toggle('is-active', row.dataset.project === key));
     if (footerCount) {
       const idx = ORDER.indexOf(key) + 1;
       footerCount.textContent = `${String(idx).padStart(2, '0')} / ${String(ORDER.length).padStart(2, '0')}`;
     }
+    if (workActiveTitle) workActiveTitle.textContent = PROJECTS[key].title;
   };
   setActive(ORDER[0]);
 
@@ -222,6 +227,38 @@
   /* ---------- Clicks: list row -> jump to slide (or open modal on mobile
      where the track is hidden); preview frame -> open modal ---------- */
   const isMobileLayout = () => window.matchMedia('(max-width: 720px)').matches;
+
+  /* ---------- Autoplay row thumbnails on mobile ----------
+     .work-track (and its autoplaying videos) is display:none on mobile -
+     without this, the mobile list is a purely static gallery even though
+     motion is the actual product. Each row's thumbnail lazy-loads and
+     plays its clip while the row is substantially in view, muted+looping,
+     same as the desktop preview. Guarded by isMobileLayout() so a resize
+     back to desktop width doesn't fight the .work-track videos. */
+  if ('IntersectionObserver' in window) {
+    const rowIO = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const row = entry.target;
+          const thumb = row.querySelector('.proj-row-thumb');
+          const video = row.querySelector('.proj-row-video');
+          if (!thumb || !video) return;
+          if (entry.isIntersecting && isMobileLayout()) {
+            if (!video.src) {
+              video.src = `assets/vids/${video.dataset.file}`;
+              video.load();
+            }
+            video.play().then(() => thumb.classList.add('is-playing')).catch(() => {});
+          } else {
+            video.pause();
+            thumb.classList.remove('is-playing');
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    projRows.forEach((row) => rowIO.observe(row));
+  }
   projRows.forEach((row) => {
     row.addEventListener('click', () => {
       const key = row.dataset.project;

@@ -5,7 +5,11 @@
   --bg: #f7f6f2;
   --bg-soft: #eeece4;
   --fg: #0a0a0a;
-  --fg-dim: #85837a;
+  /* #6b6a62 on --bg is ~5:1 - passes WCAG AA (4.5:1) for normal-size text.
+     The original #85837a measured 3.51:1, which fails AA - and this token
+     covers nearly every secondary/reading string on the site (nav, project
+     meta, contact, footer, modal copy), not just decorative hints. */
+  --fg-dim: #6b6a62;
   --line: #dedbd1;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --page-pad-y: clamp(14px, 2.6vh, 26px);
@@ -124,8 +128,11 @@ button { background: none; border: 0; cursor: pointer; }
 .wordmark {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  font-size: clamp(56px, 14cqw, 168px);
-  line-height: 0.86;
+  /* Sized for a two-line "Ivan / Zosimov" lockup (longest line: 7 letters) -
+     scaled down from the old single-word "Novyy" clamp so the wider line
+     can't overflow .page's width; see the vw->cqw note above for why cqw. */
+  font-size: clamp(40px, 10cqw, 132px);
+  line-height: 0.9;
   letter-spacing: -0.03em;
   margin: 0;
   color: var(--fg);
@@ -244,8 +251,9 @@ button { background: none; border: 0; cursor: pointer; }
 .preview-role,
 .preview-meta {
   font-family: 'Montserrat', sans-serif;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--fg-dim);
   white-space: nowrap;
@@ -352,6 +360,29 @@ button { background: none; border: 0; cursor: pointer; }
   position: sticky;
   top: var(--page-pad-y);
 }
+/* Ties the otherwise-static right column to the scroll-driven active
+   project (js/main.js setActive) - same idea as the footer's "03 / 05"
+   counter, just spelled out as a name instead of a number. */
+.work-active {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.work-active-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.work-active-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
 .work-blurb {
   font-size: 14px;
   line-height: 1.6;
@@ -459,6 +490,10 @@ button { background: none; border: 0; cursor: pointer; }
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 .modal-close:hover { color: var(--fg); border-color: var(--fg); }
+.modal-close:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
 
 .modal-label {
   display: block;
@@ -587,7 +622,7 @@ button { background: none; border: 0; cursor: pointer; }
   .top-nav-contact { gap: 12px; }
 
   .brand-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .wordmark { font-size: clamp(48px, 18cqw, 88px); }
+  .wordmark { font-size: clamp(34px, 13cqw, 62px); }
   .tagline { text-align: left; margin: 0; }
 
   .work-stage {
@@ -616,19 +651,33 @@ button { background: none; border: 0; cursor: pointer; }
   .proj-row::before { align-self: flex-start; padding-top: 4px; }
   .proj-row-thumb {
     display: block;
+    position: relative;
     flex-shrink: 0;
-    width: 56px;
+    width: 84px;
     aspect-ratio: 9 / 16;
     border-radius: 4px;
     overflow: hidden;
     background: var(--bg-soft);
   }
-  .proj-row-thumb img {
+  .proj-row-poster,
+  .proj-row-video {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
+  /* Lazily played by an IntersectionObserver as each row scrolls through
+     view (js/main.js) - the poster cross-fades to the looping muted video
+     so the mobile list isn't a purely static gallery, matching the
+     autoplay-on-scroll preview the desktop track already does. */
+  .proj-row-video {
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+  .proj-row-thumb.is-playing .proj-row-video { opacity: 1; }
+  .proj-row-thumb.is-playing .proj-row-poster { opacity: 0; }
   .proj-row-name { font-size: 19px; }
   .proj-row-meta {
     display: block;
@@ -637,6 +686,10 @@ button { background: none; border: 0; cursor: pointer; }
   }
 
   .work-info { margin-top: 8px; }
+  /* No scroll-driven "active" project on the static mobile list - showing
+     it here would just freeze on whatever ORDER[0] is, which reads as
+     wrong rather than helpful. */
+  .work-active { display: none; }
   .work-blurb { max-width: none; }
 
   .bottom-bar { flex-direction: column; align-items: flex-start; gap: 4px; }
