@@ -188,7 +188,6 @@
     slide.className = 'work-slide';
     slide.dataset.project = key;
     slide.innerHTML = `
-      <span class="preview-role">${p.role}</span>
       <button class="preview-frame-group" data-project="${key}" aria-label="Open ${p.title} case study">
         <span class="preview-frame">
           <img class="preview-poster" src="${firstMedia ? posterFor(firstMedia) : ''}" alt="">
@@ -198,7 +197,8 @@
           </span>
         </span>
         <span class="preview-cta">View case study →</span>
-      </button>`;
+      </button>
+      <span class="preview-role">${p.role}</span>`;
     workTrack.appendChild(slide);
   });
 

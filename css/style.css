@@ -200,13 +200,24 @@ button { background: none; border: 0; cursor: pointer; }
   flex-direction: column;
   gap: clamp(10px, 2vh, 20px);
   counter-reset: proj;
-  /* Centered, not top-pinned - top:50% + translateY(-50%) is the standard
-     sticky-to-viewport-center trick (percentage offsets on a sticky
-     element resolve against the scrollport, same as the reference site's
-     list staying put in the middle of the screen instead of creeping up
-     under the top nav as you scroll). */
+  /* Centered, not top-pinned - matches the reference site's list staying
+     put in the middle of the screen instead of creeping up under the top
+     nav as you scroll. top:50vh puts the sticky element's top edge at
+     viewport-center; the translateY(-50%) that should then pull it up by
+     half its own height is re-asserted below at higher specificity - see
+     that rule for why a plain `transform` here doesn't survive. */
   position: sticky;
-  top: 50%;
+  top: 50vh;
+}
+/* .proj-list also carries .fade-in, whose own .is-visible rule sets
+   `transform: translateY(0)` at 2-class specificity - a plain `transform`
+   on .proj-list (1 class) loses that fight the instant the load animation
+   finishes, snapping the centering translate back to 0 and leaving the
+   list stuck 50vh from the top instead of centered on it. Matching the
+   selector's specificity (and coming later in the file) is what makes the
+   centering transform actually stick. */
+.proj-list.fade-in,
+.proj-list.fade-in.is-visible {
   transform: translateY(-50%);
 }
 .proj-row {
@@ -678,8 +689,13 @@ button { background: none; border: 0; cursor: pointer; }
   }
   /* .proj-list's desktop centering transform isn't scoped to sticky - it
      applies to any position, so it has to be explicitly cleared here or
-     the mobile stacked list renders shifted up by half its own height. */
-  .proj-list { transform: none; }
+     the mobile stacked list renders shifted up by half its own height.
+     Matches .proj-list.fade-in.is-visible's specificity (3 classes) -
+     anything lower loses that fight and the transform leaks through. */
+  .proj-list.fade-in,
+  .proj-list.fade-in.is-visible {
+    transform: none;
+  }
 
   .proj-list { gap: 18px; }
   .proj-row {
