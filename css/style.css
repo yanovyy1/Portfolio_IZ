@@ -200,8 +200,14 @@ button { background: none; border: 0; cursor: pointer; }
   flex-direction: column;
   gap: clamp(10px, 2vh, 20px);
   counter-reset: proj;
+  /* Centered, not top-pinned - top:50% + translateY(-50%) is the standard
+     sticky-to-viewport-center trick (percentage offsets on a sticky
+     element resolve against the scrollport, same as the reference site's
+     list staying put in the middle of the screen instead of creeping up
+     under the top nav as you scroll). */
   position: sticky;
-  top: var(--page-pad-y);
+  top: 50%;
+  transform: translateY(-50%);
 }
 .proj-row {
   display: flex;
@@ -670,6 +676,10 @@ button { background: none; border: 0; cursor: pointer; }
   .work-info {
     position: static;
   }
+  /* .proj-list's desktop centering transform isn't scoped to sticky - it
+     applies to any position, so it has to be explicitly cleared here or
+     the mobile stacked list renders shifted up by half its own height. */
+  .proj-list { transform: none; }
 
   .proj-list { gap: 18px; }
   .proj-row {
