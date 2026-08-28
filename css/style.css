@@ -13,6 +13,17 @@
   --line: #dedbd1;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --page-pad-y: clamp(12px, 2vh, 20px);
+  --page-pad-x: clamp(18px, 3.6vw, 44px);
+  /* .page's actual content width (viewport minus its own left/right
+     padding) - used everywhere a size below used to be expressed in cqw
+     against .page as a query container. Plain vw would overflow .page's
+     real width by the padding amount; this calc can't, by construction,
+     for the same reason cqw couldn't - it's derived from .page's own
+     padding value, not guessed. See the removed container-type note in
+     .page below for why cqw itself had to go. */
+  --content-w: calc(100vw - 2 * var(--page-pad-x));
+  --proj-list-w: clamp(180px, calc(var(--content-w) * 0.2), 260px);
+  --work-info-w: clamp(200px, calc(var(--content-w) * 0.22), 300px);
 }
 
 /* Manual toggle only (js/main.js sets/clears data-theme="dark" on <html>,
@@ -96,23 +107,23 @@ button { background: none; border: 0; cursor: pointer; }
 }
 
 /* ---------- Page ----------
-   container-type:inline-size turns .page into a query container so
-   descendants below can size themselves in cqw (% of THIS element's actual
-   rendered width) instead of vw (% of the viewport). They normally agree,
-   but vw doesn't account for anything that eats into .page's own width
-   (padding, a future sidebar, being embedded narrower than the viewport),
-   so a vw-sized element can end up wider than the space .page actually
-   gives it. cqw can't: it's defined as a fraction of that real width, so
-   it's mechanically incapable of overflowing it. */
+   Deliberately NOT a container-type:inline-size query container (it was,
+   briefly - see git history if you're wondering). container-type applies
+   layout containment, which makes the element a containing block for its
+   position:fixed descendants too, not just the cqw-sized ones - silently
+   turning .proj-list/.work-info below into elements that scroll away with
+   the page instead of actually pinning to the viewport, since .page (not
+   the viewport) became their "fixed" anchor. --content-w in :root above
+   is what the cqw sizing was replaced with - same "can't overflow .page's
+   real width" guarantee, without a containing block side effect. */
 .page {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: var(--page-pad-y) clamp(18px, 3.6vw, 44px);
+  padding: var(--page-pad-y) var(--page-pad-x);
   gap: clamp(8px, 1.8vh, 16px);
   position: relative;
   z-index: 1;
-  container-type: inline-size;
 }
 
 /* ---------- Top nav: thin utility row ---------- */
@@ -151,16 +162,15 @@ button { background: none; border: 0; cursor: pointer; }
 .wordmark {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  /* One line, "Ivan Zosimov" (12 characters incl. the space) - cqw here
-     is ~5/12 of the old two-line clamp's 9cqw (that one only had to fit
-     "Zosimov", 7 letters) so the full name can't overflow .page's width;
-     see the vw->cqw note above for why cqw at all.
+  /* One line, "Ivan Zosimov" (12 characters incl. the space) - 5% of
+     --content-w (:root) is enough for the full name not to overflow
+     .page's real width, same guarantee cqw used to give (see --content-w).
      .proj-list/.work-info are position:fixed, pinned to dead-center of
      the viewport at every scroll position including the very first frame
      - so the header has to be physically incapable of growing tall
      enough to reach that center point, on any real viewport, or the two
-     overlap. min(5cqw, 22vh) is the fix: 5cqw caps it against the
-     container's WIDTH, 22vh caps it against the viewport's HEIGHT -
+     overlap. min(..., 22vh) is the fix: the content-w term caps it against
+     the container's WIDTH, 22vh caps it against the viewport's HEIGHT -
      whichever is smaller wins, so a short/squat window shrinks the
      wordmark on its own well before it could reach the centered columns.
      One line only needs half the vertical room a two-line lockup did
@@ -173,7 +183,7 @@ button { background: none; border: 0; cursor: pointer; }
      stay past the 720px mobile breakpoint) can still see slight overlap
      there, though the one-line change pushed that floor much lower than
      the two-line version's ~500-550px. */
-  font-size: clamp(40px, min(5cqw, 22vh), 125px);
+  font-size: clamp(40px, min(calc(var(--content-w) * 0.05), 22vh), 125px);
   line-height: 0.9;
   letter-spacing: -0.03em;
   margin: 0;
@@ -181,7 +191,7 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .tagline {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(14px, 1.9cqw, 19px);
+  font-size: clamp(14px, calc(var(--content-w) * 0.019), 19px);
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -206,7 +216,7 @@ button { background: none; border: 0; cursor: pointer; }
    position past the offset; before that it's just wherever the header
    put it). Overlapping the wordmark above was the obvious risk with an
    always-centered fixed column - handled at the source by capping the
-   wordmark's own size against viewport height (see .wordmark's min(cqw,
+   wordmark's own size against viewport height (see .wordmark's min(...,
    vh) above), not by adjusting the columns' position, so there's nothing
    here that can drift out of sync with the header later.
    Taken out of the flex row entirely (fixed elements don't participate
@@ -227,8 +237,8 @@ button { background: none; border: 0; cursor: pointer; }
   counter-reset: proj;
   position: fixed;
   top: 0;
-  left: clamp(18px, 3.6vw, 44px);
-  width: clamp(180px, 20cqw, 260px);
+  left: var(--page-pad-x);
+  width: var(--proj-list-w);
   height: 100dvh;
 }
 .proj-row {
@@ -261,7 +271,7 @@ button { background: none; border: 0; cursor: pointer; }
 .proj-row-name {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
-  font-size: clamp(17px, 2.5cqw, 23px);
+  font-size: clamp(17px, calc(var(--content-w) * 0.025), 23px);
   letter-spacing: -0.01em;
 }
 .proj-row-meta {
@@ -297,14 +307,14 @@ button { background: none; border: 0; cursor: pointer; }
      width + the gap that used to come from .work-stage's column-gap -
      without it the track would render full-bleed under the fixed
      columns instead of staying centered between them. */
-  padding-left: calc(clamp(180px, 20cqw, 260px) + clamp(20px, 4cqw, 56px));
-  padding-right: calc(clamp(200px, 22cqw, 300px) + clamp(20px, 4cqw, 56px));
+  padding-left: calc(var(--proj-list-w) + clamp(20px, calc(var(--content-w) * 0.04), 56px));
+  padding-right: calc(var(--work-info-w) + clamp(20px, calc(var(--content-w) * 0.04), 56px));
 }
 .work-slide {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(10px, 2.2cqw, 22px);
+  gap: clamp(10px, calc(var(--content-w) * 0.022), 22px);
 }
 .preview-role {
   font-family: 'Montserrat', sans-serif;
@@ -326,7 +336,7 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .preview-frame {
   position: relative;
-  width: clamp(160px, 18cqw, 260px);
+  width: clamp(160px, calc(var(--content-w) * 0.18), 260px);
   aspect-ratio: 9 / 16;
   border-radius: 10px;
   overflow: hidden;
@@ -417,8 +427,8 @@ button { background: none; border: 0; cursor: pointer; }
   /* Fixed, same technique and reasoning as .proj-list above. */
   position: fixed;
   top: 0;
-  right: clamp(18px, 3.6vw, 44px);
-  width: clamp(200px, 22cqw, 300px);
+  right: var(--page-pad-x);
+  width: var(--work-info-w);
   height: 100dvh;
 }
 /* Ties the otherwise-static right column to the scroll-driven active
@@ -677,6 +687,9 @@ button { background: none; border: 0; cursor: pointer; }
 
 /* ---------- Mobile: single scrolling column ---------- */
 @media (max-width: 720px) {
+  /* --content-w (see :root) derives from --page-pad-x, so it has to track
+     .page's actual padding here too, not just the desktop clamp(). */
+  :root { --page-pad-x: 16px; }
   .page { height: auto; min-height: 100dvh; padding: 16px 16px; gap: 22px; }
 
   .top-nav { flex-wrap: wrap; gap: 8px; }
@@ -691,7 +704,7 @@ button { background: none; border: 0; cursor: pointer; }
   .theme-toggle { padding: 15px 12px 15px 0; margin: -15px 0; }
 
   .brand-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .wordmark { font-size: clamp(24px, 7.5cqw, 48px); }
+  .wordmark { font-size: clamp(24px, calc(var(--content-w) * 0.075), 48px); }
   .tagline { text-align: left; margin: 0; }
 
   .work-stage {
