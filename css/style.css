@@ -76,7 +76,15 @@ button { background: none; border: 0; cursor: pointer; }
   transform: translateY(0);
 }
 
-/* ---------- Page ---------- */
+/* ---------- Page ----------
+   container-type:inline-size turns .page into a query container so
+   descendants below can size themselves in cqw (% of THIS element's actual
+   rendered width) instead of vw (% of the viewport). They normally agree,
+   but vw doesn't account for anything that eats into .page's own width
+   (padding, a future sidebar, being embedded narrower than the viewport),
+   so a vw-sized element can end up wider than the space .page actually
+   gives it. cqw can't: it's defined as a fraction of that real width, so
+   it's mechanically incapable of overflowing it. */
 .page {
   min-height: 100dvh;
   display: flex;
@@ -85,6 +93,7 @@ button { background: none; border: 0; cursor: pointer; }
   gap: clamp(10px, 2.2vh, 20px);
   position: relative;
   z-index: 1;
+  container-type: inline-size;
 }
 
 /* ---------- Top nav: thin utility row ---------- */
@@ -115,7 +124,7 @@ button { background: none; border: 0; cursor: pointer; }
 .wordmark {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  font-size: clamp(56px, 12vw, 168px);
+  font-size: clamp(56px, 14cqw, 168px);
   line-height: 0.86;
   letter-spacing: -0.03em;
   margin: 0;
@@ -123,7 +132,7 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .tagline {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(15px, 2vw, 21px);
+  font-size: clamp(15px, 2.2cqw, 21px);
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -151,12 +160,12 @@ button { background: none; border: 0; cursor: pointer; }
   min-width: 0;
   display: flex;
   align-items: flex-start;
-  column-gap: clamp(20px, 4vw, 56px);
+  column-gap: clamp(20px, 4cqw, 56px);
 }
 
 /* ---- Project list (left, sticky) ---- */
 .proj-list {
-  flex: 0 0 clamp(180px, 18vw, 260px);
+  flex: 0 0 clamp(180px, 20cqw, 260px);
   display: flex;
   flex-direction: column;
   gap: clamp(10px, 2vh, 20px);
@@ -194,7 +203,7 @@ button { background: none; border: 0; cursor: pointer; }
 .proj-row-name {
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
-  font-size: clamp(17px, 2.3vw, 23px);
+  font-size: clamp(17px, 2.5cqw, 23px);
   letter-spacing: -0.01em;
 }
 .proj-row-meta {
@@ -230,7 +239,7 @@ button { background: none; border: 0; cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(10px, 2vw, 22px);
+  gap: clamp(10px, 2.2cqw, 22px);
 }
 .preview-role,
 .preview-meta {
@@ -252,7 +261,7 @@ button { background: none; border: 0; cursor: pointer; }
 }
 .preview-frame {
   position: relative;
-  width: clamp(160px, 17vw, 260px);
+  width: clamp(160px, 18cqw, 260px);
   aspect-ratio: 9 / 16;
   border-radius: 10px;
   overflow: hidden;
@@ -336,7 +345,7 @@ button { background: none; border: 0; cursor: pointer; }
 
 /* ---- Work info (right, sticky) ---- */
 .work-info {
-  flex: 0 0 clamp(200px, 20vw, 300px);
+  flex: 0 0 clamp(200px, 22cqw, 300px);
   display: flex;
   flex-direction: column;
   gap: clamp(16px, 3vh, 28px);
@@ -578,7 +587,7 @@ button { background: none; border: 0; cursor: pointer; }
   .top-nav-contact { gap: 12px; }
 
   .brand-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .wordmark { font-size: clamp(48px, 16vw, 88px); }
+  .wordmark { font-size: clamp(48px, 18cqw, 88px); }
   .tagline { text-align: left; margin: 0; }
 
   .work-stage {
