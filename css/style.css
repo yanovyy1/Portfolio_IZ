@@ -12,7 +12,7 @@
   --fg-dim: #6b6a62;
   --line: #dedbd1;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --page-pad-y: clamp(14px, 2.6vh, 26px);
+  --page-pad-y: clamp(8px, 1.4vh, 14px);
 }
 
 /* Manual toggle only (js/main.js sets/clears data-theme="dark" on <html>,
@@ -109,7 +109,7 @@ button { background: none; border: 0; cursor: pointer; }
   display: flex;
   flex-direction: column;
   padding: var(--page-pad-y) clamp(18px, 3.6vw, 44px);
-  gap: clamp(10px, 2.2vh, 20px);
+  gap: clamp(4px, 1vh, 10px);
   position: relative;
   z-index: 1;
   container-type: inline-size;
@@ -146,23 +146,29 @@ button { background: none; border: 0; cursor: pointer; }
   flex-direction: column;
   align-items: flex-start;
   flex-shrink: 0;
-  gap: clamp(12px, 2.4vh, 26px);
+  gap: clamp(2px, 0.5vh, 6px);
 }
 .wordmark {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   /* Sized for a two-line "Ivan / Zosimov" lockup (longest line: 7 letters) -
      scaled down from the old single-word "Novyy" clamp so the wider line
-     can't overflow .page's width; see the vw->cqw note above for why cqw. */
-  font-size: clamp(40px, 10cqw, 132px);
-  line-height: 0.9;
+     can't overflow .page's width; see the vw->cqw note above for why cqw.
+     Kept deliberately compact, well short of a single-screen headline -
+     .proj-list/.work-info center themselves in a 100dvh sticky box (see
+     below). The offset between "centered in that box" and "centered in
+     the FIRST viewport" is mathematically exactly the header's height (it
+     hasn't started sticking yet at scroll:0) - shrinking the header is
+     the only way to shrink that gap, by explicit request. */
+  font-size: clamp(18px, 3.2cqw, 34px);
+  line-height: 1;
   letter-spacing: -0.03em;
   margin: 0;
   color: var(--fg);
 }
 .tagline {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(15px, 2.2cqw, 21px);
+  font-size: clamp(10px, 1.1cqw, 13px);
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -669,7 +675,7 @@ button { background: none; border: 0; cursor: pointer; }
   .theme-toggle { padding: 15px 12px 15px 0; margin: -15px 0; }
 
   .brand-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .wordmark { font-size: clamp(34px, 13cqw, 62px); }
+  .wordmark { font-size: clamp(16px, 6cqw, 26px); }
   .tagline { text-align: left; margin: 0; }
 
   .work-stage {
