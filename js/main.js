@@ -81,6 +81,33 @@
     },
   };
 
+  /* ---------- Theme toggle (persisted in localStorage) ----------
+     The actual switch already happened before first paint - an inline
+     script in index.html's <head> reads localStorage and sets
+     data-theme="dark" on <html> synchronously, so there's no flash of the
+     light theme on a dark-mode reload. This just keeps the button's label
+     in sync and remembers new choices. */
+  const THEME_KEY = 'theme';
+  const htmlEl = document.documentElement;
+  const themeToggle = document.getElementById('themeToggle');
+  const themeToggleLabel = document.getElementById('themeToggleLabel');
+
+  const currentTheme = () => (htmlEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+  const applyTheme = (theme) => {
+    if (theme === 'dark') htmlEl.setAttribute('data-theme', 'dark');
+    else htmlEl.removeAttribute('data-theme');
+    if (themeToggleLabel) themeToggleLabel.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    if (themeToggle) themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+  };
+  applyTheme(currentTheme());
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    });
+  }
+
   /* ---------- Fade-in on load ---------- */
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {

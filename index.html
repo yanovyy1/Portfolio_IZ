@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+  /* Runs before first paint so a stored preference applies immediately -
+     doing this from js/main.js (loaded at the end of body) would flash
+     the light theme first on every dark-mode reload. */
+  try {
+    var storedTheme = localStorage.getItem('theme');
+    if (storedTheme) document.documentElement.setAttribute('data-theme', storedTheme);
+  } catch (e) {}
+</script>
 <title>Ivan Zosimov — Lead Motion Designer</title>
 <meta name="description" content="Portfolio of Ivan Zosimov — Lead Motion Designer / AI Designer.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23000%22/><text x=%2250%22 y=%2266%22 font-size=%2260%22 font-family=%22sans-serif%22 fill=%22%23fff%22 text-anchor=%22middle%22>I</text></svg>">
@@ -18,7 +27,9 @@
 <div class="page">
 
   <header class="top-nav fade-in">
-    <span class="top-nav-item top-nav-label">Selected Work</span>
+    <button class="top-nav-item theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Toggle dark mode">
+      <span id="themeToggleLabel">Dark</span>
+    </button>
     <span class="top-nav-item top-nav-clock" id="clock" aria-hidden="true"></span>
     <nav class="top-nav-item top-nav-contact" aria-label="Contact">
       <a href="mailto:yanovyy1@gmail.com">Mail</a>

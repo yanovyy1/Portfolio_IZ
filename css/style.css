@@ -15,6 +15,20 @@
   --page-pad-y: clamp(14px, 2.6vh, 26px);
 }
 
+/* Manual toggle only (js/main.js sets/clears data-theme="dark" on <html>,
+   persisted in localStorage) - no prefers-color-scheme auto-switch, so the
+   site's default stays the light theme until someone opts in. Same warm
+   hue family as the light palette, just inverted; --fg-dim recalculated
+   for ~5.6:1 against the new --bg, same reasoning as the light-mode fix
+   above. */
+:root[data-theme="dark"] {
+  --bg: #121110;
+  --bg-soft: #1d1c19;
+  --fg: #f5f3ee;
+  --fg-dim: #8f8c80;
+  --line: #2e2c27;
+}
+
 html {
   overflow-x: hidden;
 }
@@ -28,6 +42,7 @@ html, body {
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-x: none;
+  transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
 }
 
 h1, h2, h3 { font-family: 'Montserrat', 'Inter', sans-serif; }
@@ -116,6 +131,14 @@ button { background: none; border: 0; cursor: pointer; }
 .top-nav-contact a { color: var(--fg-dim); transition: color 0.3s var(--ease); }
 .top-nav-contact a:hover { color: var(--fg); }
 .top-nav-clock { font-variant-numeric: tabular-nums; }
+
+.theme-toggle { transition: color 0.3s var(--ease); }
+.theme-toggle:hover { color: var(--fg); }
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
 
 /* ---------- Brand row: huge wordmark + tagline ---------- */
 .brand-row {
