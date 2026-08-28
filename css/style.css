@@ -139,6 +139,17 @@ button { background: none; border: 0; cursor: pointer; }
   color: var(--fg-dim);
 }
 .top-nav-item { display: flex; align-items: center; gap: 14px; }
+/* Pulled out of the top-nav row and pinned level with .work-info's
+   vertical center (same fixed+50%+translateY technique, right-aligned to
+   the same edge) so it reads as sitting alongside the "Viewing" column
+   instead of stuck at the very top of the page. Reset back to static in
+   the mobile media query below along with .proj-list/.work-info. */
+.top-nav-contact {
+  position: fixed;
+  top: 50%;
+  right: var(--page-pad-x);
+  transform: translateY(-50%);
+}
 .top-nav-contact a { color: var(--fg-dim); transition: color 0.3s var(--ease); }
 .top-nav-contact a:hover { color: var(--fg); }
 .top-nav-clock { font-variant-numeric: tabular-nums; }
@@ -693,7 +704,13 @@ button { background: none; border: 0; cursor: pointer; }
   .page { height: auto; min-height: 100dvh; padding: 16px 16px; gap: 22px; }
 
   .top-nav { flex-wrap: wrap; gap: 8px; }
-  .top-nav-contact { gap: 12px; }
+  .top-nav-contact {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+    gap: 12px;
+  }
   .top-nav-clock { display: none; }
   /* The theme toggle used to sit here as plain text ("Selected Work"), so
      an 11px label with no padding was never a problem. As a tap target on
