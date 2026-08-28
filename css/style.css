@@ -180,42 +180,47 @@ button { background: none; border: 0; cursor: pointer; }
    The center column (.work-track) is the only one with real height - it's
    five stacked full-viewport .work-slide sections, one per project, which
    is what gives the page something to scroll through. The list and info
-   columns are short by comparison and need to stay dead-center on the
-   viewport at all times, including the very first screen before any
-   scrolling - sticky can't do that (see .proj-list below for why), so
-   both are position:fixed instead and taken out of the flex flow
-   entirely; .work-track reserves their horizontal space itself with
-   padding (below) since flex layout no longer knows they're there. */
+   columns are short by comparison, so position:sticky pins each near the
+   top of the viewport for the whole scroll range instead of scrolling out
+   of view after one screen, echoing the reference site's
+   list-stays-put-while-work-scrolls-past feel.
+   Flexbox, not CSS Grid: sticky on a grid item with align-self:start did
+   not hold in Safari here (the item unstuck almost immediately) - this is
+   the well-worn "sticky sidebar" pattern (flex row, align-items:flex-start
+   on the container so children don't stretch to the tall sibling's height,
+   sticky on the two side children) and it's reliable cross-browser where
+   the grid version wasn't. */
 .work-stage {
   min-width: 0;
   display: flex;
   align-items: flex-start;
+  column-gap: clamp(20px, 4cqw, 56px);
 }
 
-/* ---- Project list (left, always centered on the viewport) ---- */
+/* ---- Project list (left, sticky) ---- */
 .proj-list {
+  flex: 0 0 clamp(180px, 20cqw, 260px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: clamp(10px, 2vh, 20px);
   counter-reset: proj;
-  /* position:sticky (tried first) can only pin an element at a fixed
-     offset once scrolling has pushed its normal-flow position past that
-     offset - at scroll:0 it's still wherever the header put it, so
-     "centered" only kicked in after scrolling roughly the header's own
-     height. Fixed has no such transition: it's pinned to the viewport
-     from the first frame, independent of scroll position - but centering
-     it on the FULL viewport height put it directly under the wordmark,
-     which is also left-aligned (the right-hand .work-info doesn't hit
-     this - nothing else sits under it). --header-h (js/main.js measures
-     .work-stage's offsetTop) carves the header's actual rendered height
-     back out, so this centers on the space actually free below it
-     instead of overlapping it. */
-  position: fixed;
-  top: var(--header-h, 0px);
-  left: clamp(18px, 3.6vw, 44px);
-  width: clamp(180px, 20cqw, 260px);
-  height: calc(100dvh - var(--header-h, 0px));
+  /* Centered, not top-pinned - matches the reference site's list staying
+     put in the middle of the screen instead of creeping up under the top
+     nav as you scroll. A fixed + measured-header-height approach was
+     tried and reverted: it centers in the space left over below the
+     header, which is a CONSTANT offset (half the header's height) short
+     of true center forever, at any scroll position - worse than this
+     sticky version for the 95% of the time someone is actually scrolled
+     into the project list, even though it wins at the literal first
+     frame. `height: 100dvh` + `justify-content: center` centers on the
+     full viewport with zero permanent offset once stuck (any scroll past
+     the header), and can't overlap the header before that because the
+     box itself can never render earlier/higher than its normal-flow
+     start. */
+  position: sticky;
+  top: 0;
+  height: 100dvh;
 }
 .proj-row {
   display: flex;
@@ -278,13 +283,6 @@ button { background: none; border: 0; cursor: pointer; }
   flex-direction: column;
   gap: clamp(28px, 5vh, 56px);
   padding: clamp(20px, 6vh, 80px) 0;
-  /* .proj-list/.work-info are position:fixed (removed from this flex row
-     entirely) so this padding is what actually reserves their columns'
-     width + the gap that used to come from .work-stage's column-gap -
-     without it the track would render full-bleed under the fixed
-     columns instead of staying centered between them. */
-  padding-left: calc(clamp(180px, 20cqw, 260px) + clamp(20px, 4cqw, 56px));
-  padding-right: calc(clamp(200px, 22cqw, 300px) + clamp(20px, 4cqw, 56px));
 }
 .work-slide {
   display: flex;
@@ -396,19 +394,15 @@ button { background: none; border: 0; cursor: pointer; }
 
 /* ---- Work info (right, sticky) ---- */
 .work-info {
+  flex: 0 0 clamp(200px, 22cqw, 300px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: clamp(16px, 3vh, 28px);
-  /* Fixed, same technique and --header-h reasoning as .proj-list above -
-     applied here too (nothing under this column actually needs it) so
-     both columns land at the same height instead of one being centered
-     lower than the other. */
-  position: fixed;
-  top: var(--header-h, 0px);
-  right: clamp(18px, 3.6vw, 44px);
-  width: clamp(200px, 22cqw, 300px);
-  height: calc(100dvh - var(--header-h, 0px));
+  /* Centered, same technique and reasoning as .proj-list above. */
+  position: sticky;
+  top: 0;
+  height: 100dvh;
 }
 /* Ties the otherwise-static right column to the scroll-driven active
    project (js/main.js setActive) - same idea as the footer's "03 / 05"
@@ -696,16 +690,11 @@ button { background: none; border: 0; cursor: pointer; }
   .work-track { display: none; }
   .proj-list,
   .work-info {
-    /* Desktop pins both columns to the viewport with position:fixed plus
-       an explicit width - on the stacked mobile layout that would freeze
-       a ~200px-wide column floating over the page instead of a normal
-       full-width block in the flow. Both need to fully reset back to
-       ordinary static sizing. */
     position: static;
-    top: auto;
-    left: auto;
-    right: auto;
-    width: auto;
+    /* Desktop centers both columns with a fixed 100dvh sticky box - on the
+       stacked mobile layout that would just be a viewport-tall blank
+       spacer with the actual rows centered inside it, pushing everything
+       else down. Both need to size to their own content again. */
     height: auto;
     justify-content: flex-start;
   }

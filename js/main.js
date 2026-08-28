@@ -108,25 +108,6 @@
     });
   }
 
-  /* ---------- Header height (drives .proj-list/.work-info centering) ----
-     Both columns are position:fixed and center themselves in the space
-     below the header via CSS var(--header-h) (see css/style.css) - it has
-     to be measured, not guessed, since the header's real height depends
-     on the responsive wordmark size (clamp/cqw) and which webfont weight
-     actually rendered. .work-stage's offsetTop is exactly that height:
-     everything before it in .page is the header. */
-  const workStageEl = document.querySelector('.work-stage');
-  if (workStageEl) {
-    const setHeaderHeight = () => {
-      document.documentElement.style.setProperty('--header-h', `${workStageEl.offsetTop}px`);
-    };
-    setHeaderHeight();
-    window.addEventListener('resize', setHeaderHeight);
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(setHeaderHeight);
-    }
-  }
-
   /* ---------- Fade-in on load ---------- */
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
