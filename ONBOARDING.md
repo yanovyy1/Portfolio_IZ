@@ -4,8 +4,10 @@
 Статический сайт (чистый HTML/CSS/JS, без сборки, без npm/фреймворков),
 задеплоен на GitHub Pages.
 
-- **Живой сайт:** https://yanovyy1.github.io/Portfolio_IZ/
-- **Репозиторий:** https://github.com/yanovyy1/Portfolio_IZ (ветка `main`)
+- **Живой сайт:** https://yanovyy1.github.io/
+- **Репозиторий:** https://github.com/yanovyy1/yanovyy1.github.io (ветка `main`,
+  переименован из `Portfolio_IZ` 2026-08-30 — под голый `username.github.io`
+  домен, чтобы сайт жил в корне без `/Portfolio_IZ/` в пути)
 - **Локальная папка:** `/Users/yanovyy/Desktop/YA/main/Portfolio-Novyy`
 - **Документ обновлён:** 2026-08-30. Это не статичный снапшот — начни с
   `git log --oneline -15` и `git status`, чтобы свериться с тем, что реально
@@ -289,8 +291,8 @@ edge-swipe жеста iOS — сейчас настроена под то, чт�
 GitHub Pages — classic (legacy) branch build, source = `main` / `/`. Если
 Pages зависнет в статусе building:
 ```bash
-gh api -X DELETE repos/yanovyy1/Portfolio_IZ/pages
-gh api -X POST repos/yanovyy1/Portfolio_IZ/pages -f "source[branch]=main" -f "source[path]=/"
+gh api -X DELETE repos/yanovyy1/yanovyy1.github.io/pages
+gh api -X POST repos/yanovyy1/yanovyy1.github.io/pages -f "source[branch]=main" -f "source[path]=/"
 ```
 
 ## Локальное тестирование — важные грабли
