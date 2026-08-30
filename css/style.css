@@ -240,6 +240,12 @@ button { background: none; border: 0; cursor: pointer; }
   left: var(--page-pad-x);
   width: var(--proj-list-w);
   height: 100dvh;
+  /* The box spans the full viewport height so its centered content never
+     shifts, but that leaves empty space above/below the rows sitting on
+     top of .top-nav (same stacking context, later in DOM) - pointer-events:
+     none here + auto on the actual rows lets clicks fall through to
+     whatever's underneath everywhere except the rows themselves. */
+  pointer-events: none;
 }
 .proj-row {
   display: flex;
@@ -249,6 +255,7 @@ button { background: none; border: 0; cursor: pointer; }
   counter-increment: proj;
   color: var(--fg-dim);
   transition: color 0.3s var(--ease);
+  pointer-events: auto;
 }
 .proj-row::before {
   content: counter(proj, decimal-leading-zero);
@@ -430,6 +437,10 @@ button { background: none; border: 0; cursor: pointer; }
   right: var(--page-pad-x);
   width: var(--work-info-w);
   height: 100dvh;
+  /* Same reasoning as .proj-list above - this box's empty top/bottom
+     space would otherwise sit on top of .top-nav's MAIL/TELEGRAM/CALL
+     links and block clicks on them. */
+  pointer-events: none;
 }
 /* Ties the otherwise-static right column to the scroll-driven active
    project (js/main.js setActive) - same idea as the footer's "03 / 05"
@@ -478,6 +489,7 @@ button { background: none; border: 0; cursor: pointer; }
 .work-contact a {
   color: var(--fg);
   transition: opacity 0.3s var(--ease);
+  pointer-events: auto;
 }
 .work-contact a:hover { opacity: 0.6; }
 
